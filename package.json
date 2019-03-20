@@ -15,6 +15,7 @@
     "cross-env": "^5.2.0",
     "electron": "^4.1.0",
     "electron-builder": "^20.39.0",
+    "typescript": "^3.3.4000",
     "wait-on": "^3.2.0"
   },
   "scripts": {
@@ -23,7 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "cross-env ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true electron-builder --dir",
+    "electron-pack": "electron-builder --dir",
     "preelectron-pack": "npm run build"
   },
   "eslintConfig": {
