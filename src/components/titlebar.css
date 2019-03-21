@@ -1,0 +1,39 @@
+.titlebar {
+    -webkit-user-select: none;
+    /* -webkit-app-region: drag; */
+    min-height: 30px !important;
+    height: 30px;
+    background-color: #bbddff;
+    line-height: 30px;
+    color: rgb(100, 100, 100);
+}
+
+.window-dragable {
+    -webkit-app-region: drag;
+}
+
+.window-control {
+    font-family: "SegMDL2";
+    font-size: 10px;
+    min-width: 10px !important;
+}
+
+.window-minimize:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.window-maximize:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.window-close:hover {
+    background-color: rgba(255, 0, 0, 0.5);
+}
+
+.window-resizer {
+    -webkit-app-region: no-drag;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 4px;
+}

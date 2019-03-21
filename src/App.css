@@ -1,0 +1,14 @@
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+.root {
+  height: 100%;
+  width: 100%;
+}
+
+.app {
+  background-color: #dddddd;
+  overflow: auto;
+}

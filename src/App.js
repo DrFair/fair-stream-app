@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import Titlebar from './components/titlebar.js'
 
 const { ipcRenderer } = window.electron;
 
@@ -15,10 +16,13 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <p>
-          Nothing is here yet!
-        </p>
+      <div className="d-flex flex-column h-100">
+        <Titlebar />
+        <div className="app h-100">
+          <p>
+            Nothing is here yet!
+          </p>
+        </div>
       </div>
     );
   }

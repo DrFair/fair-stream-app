@@ -6,20 +6,17 @@ const path = require('path');
 const url = require('url');
 const isDev = require('electron-is-dev');
 
-const ipcMain = electron.ipcMain;
-
-ipcMain.on('ping', (event, arg) => {
-  console.log('ping received');
-  event.sender.send('pong', 'pong');
-});
-
 let mainWindow;
 
 function createWindow() {
   let size = 580;
+  let minSize = 150;
   mainWindow = new BrowserWindow({
-    width: size * 16 / 9, 
+    width: Math.floor(size * 16 / 9),
     height: size,
+    minWidth: Math.floor(minSize * 16 / 9),
+    minHeight: minSize,
+    frame: false,
     webPreferences: {
       nodeIntegration: false,
       preload: __dirname + '/preload.js'
