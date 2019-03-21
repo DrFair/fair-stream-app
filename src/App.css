@@ -9,6 +9,7 @@ html, body {
 }
 
 .app {
-  background-color: #dddddd;
+  background: #172936;
+  color: #FFF;
   overflow: auto;
 }

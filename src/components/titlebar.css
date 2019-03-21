@@ -3,9 +3,9 @@
     /* -webkit-app-region: drag; */
     min-height: 30px !important;
     height: 30px;
-    background-color: #bbddff;
+    background-color: #264459;
     line-height: 30px;
-    color: rgb(100, 100, 100);
+    color: #DDD;
 }
 
 .window-dragable {
@@ -19,15 +19,15 @@
 }
 
 .window-minimize:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .window-maximize:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .window-close:hover {
-    background-color: rgba(255, 0, 0, 0.5);
+    background-color: rgba(255, 0, 0, 0.4);
 }
 
 .window-resizer {
