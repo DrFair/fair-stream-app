@@ -15,5 +15,5 @@ code {
 
 @font-face {
   font-family: "SegMDL2";
-  src: url("/css/SegMDL2.ttf");
+  src: url("./fonts/SegMDL2.ttf");
 }

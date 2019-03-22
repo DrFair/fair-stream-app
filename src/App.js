@@ -22,6 +22,13 @@ class App extends Component {
           <p>
             Nothing is here yet!
           </p>
+          <button
+            onClick={() => {
+              
+            }}
+          >
+            Test
+          </button>
         </div>
       </div>
     );

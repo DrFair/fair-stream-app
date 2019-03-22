@@ -19,7 +19,7 @@ class Titlebar extends Component {
     return (
       <div className="titlebar w-100 d-flex flex-fill flex-grow-1">
         <div className="px-1 window-dragable">
-          <img src="/favicon.ico" width="26" height="26" style={{ marginTop: 2, verticalAlign: 'unset' }} alt="App icon" />
+          <img src="favicon.ico" width="26" height="26" style={{ marginTop: 2, verticalAlign: 'unset' }} alt="App icon" />
         </div>
         <div className="px-1 flex-fill text-center window-dragable">
           Fair Stream App

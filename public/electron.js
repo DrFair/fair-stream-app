@@ -23,7 +23,7 @@ function createWindow() {
     },
     icon: __dirname + '/favicon.ico'
   });
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+  mainWindow.loadURL((!isDev || process.env.ELECTRON_USE_BUILD_FOLDER) ? `file://${path.join(__dirname, '../build/index.html')}` : 'http://localhost:3000');
   mainWindow.on('closed', () => mainWindow = null);
 }
 
