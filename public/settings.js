@@ -21,9 +21,27 @@ class Settings {
     }
 
     // Deep overwrites the current settings (like react setState)
-    set(newSettings) {
-        overwriteObj(this.get(), newSettings);
+    set(settings) {
+        overwriteObj(this.get(), settings);
     }
+
+    compare(settings) {
+        return compare(this.get(), settings);
+    }
+}
+
+// Returns true if the newObj has different values from oldObj (only compares similar keys)
+function compare(oldObj, newObj) {
+    for (const key in newObj) {
+        if (oldObj.hasOwnProperty(key)) {
+            if (typeof(oldObj[key]) === 'object' && oldObj[key] !== null) {
+                if (compare(oldObj[key], newObj[key])) return true;
+            } else {
+                if (oldObj[key] !== newObj[key]) return true;
+            }
+        }
+    }
+    return false;
 }
 
 function overwriteObj(oldObj, newObj) {

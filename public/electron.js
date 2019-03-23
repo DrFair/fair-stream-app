@@ -8,6 +8,10 @@ const isDev = require('electron-is-dev');
 
 const settings = require('./settings.js');
 
+ipcMain.on('settings-compare', (event, args) => {
+  event.returnValue = settings.compare(args);
+});
+
 ipcMain.on('settings-set', (event, args) => {
   settings.set(args);
   event.returnValue = settings.get(); // Returns the settings again
