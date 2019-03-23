@@ -1,0 +1,34 @@
+.navbar {
+    -webkit-user-select: none;
+    min-height: 30px !important;
+    height: 30px;
+    background-color: #264459;
+    line-height: 30px;
+    font-size: 20px;
+    color: #DDD;
+    padding: 0px;
+}
+
+.navbar-item {
+    position: relative;
+}
+
+.navbar-item .navbar-active {
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: #AAA;
+}
+
+.navbar-item:hover {
+    color: #FFF;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.navbar-icon {
+    font-family: "SegMDL2";
+    font-size: 15px;
+}
