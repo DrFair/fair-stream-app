@@ -10,6 +10,7 @@ const settings = require('./settings.js');
 
 ipcMain.on('settings-set', (event, args) => {
   settings.set(args);
+  event.returnValue = settings.get(); // Returns the settings again
 });
 
 ipcMain.on('settings-get', (event, args) => {

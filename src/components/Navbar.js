@@ -3,7 +3,6 @@ import './Navbar.css';
 
 class NavBar extends Component {
   render() {
-    const { route, setRoute } = this.props;
     return (
       <div className="w-100 d-flex justify-content-start navbar">
         <NavBarItem id="notifications" name="Notifications" icon="&#xE7E7;" {...this.props} />

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Titlebar from './components/Titlebar.js';
 import NavBar from './components/Navbar.js';
+import Settings from './components/Settings.js';
 
 const { ipcRenderer } = window.electron;
 
@@ -10,12 +11,14 @@ class App extends Component {
     super(props);
     this.routes = {
       'notifications': NotificationsRoute,
-      'settings': SettingsRoute
+      'settings': Settings
     };
     this.state = {
-      route: 'notifications'
+      route: 'settings',
+      settings: null
     };
     this.setRoute = this.setRoute.bind(this);
+    this.setSettings = this.setSettings.bind(this);
   }
 
   setRoute(route) {
@@ -24,18 +27,31 @@ class App extends Component {
     });
   }
 
+  setSettings(settings) {
+    return ipcRenderer.sendSync('settings-set', settings);
+  }
+
   componentDidMount() {
+    this.setState({
+      settings: ipcRenderer.sendSync('settings-get')
+    });
   }
 
   render() {
-    const { route } = this.state;
+    const { route, settings } = this.state;
     const RouteComp = this.routes[route] || null;
+    const childProps = {
+      route: route,
+      setRoute: this.setRoute,
+      setSettings: this.setSettings,
+      settings: settings
+    };
     return (
       <div className="d-flex flex-column h-100">
         <Titlebar />
-        <NavBar route={route} setRoute={this.setRoute} />
+        <NavBar {...childProps} />
         <div className="app h-100">
-          <RouteComp route={route} setRoute={this.setRoute} />
+          <RouteComp {...childProps} />
         </div>
       </div>
     );
@@ -46,14 +62,6 @@ const NotificationsRoute = () => {
   return (
     <div>
       This is notifications
-    </div>
-  )
-};
-
-const SettingsRoute = () => {
-  return (
-    <div>
-      This is settings
     </div>
   )
 };

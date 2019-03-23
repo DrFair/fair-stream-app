@@ -1,0 +1,20 @@
+.settings-note {
+    color: #888;
+    font-size: 80%;
+    font-style: italic;
+}
+
+.settings-apply {
+    color: #FFF;
+    background: #70a0c2;
+    border-color: #4d88b3;
+}
+
+.settings-apply:hover {
+    background: #94b8d1;
+}
+
+.divider {
+    width: 100%;
+    border-bottom: 1px solid #555;
+}
