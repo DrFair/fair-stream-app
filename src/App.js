@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Titlebar from './components/titlebar.js';
-import NavBar from './components/navbar.js';
+import Titlebar from './components/Titlebar.js';
+import NavBar from './components/Navbar.js';
 
 const { ipcRenderer } = window.electron;
 

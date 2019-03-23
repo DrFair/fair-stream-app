@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './titlebar.css';
+import './Titlebar.css';
 
 const BrowserWindow = window.electron.remote.getCurrentWindow();
 
@@ -9,9 +9,6 @@ class Titlebar extends Component {
     this.state = {
       update: 0
     };
-  }
-
-  componentDidMount() {
   }
 
   render() {
