@@ -1,10 +1,19 @@
 const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, ipcMain } = electron;
 
 const path = require('path');
 const url = require('url');
 const isDev = require('electron-is-dev');
+
+const settings = require('./settings.js');
+
+ipcMain.on('settings-set', (event, args) => {
+  settings.set(args);
+});
+
+ipcMain.on('settings-get', (event, args) => {
+  event.returnValue = settings.get();
+});
 
 let mainWindow;
 
