@@ -18,6 +18,7 @@ const requiredSuccessConnect = [
 // name - [parameters] - description
 
 // error - error - When an error has happened
+// parseerror - line, error - When a parse error happens
 // ready - When successfully connected and authorized
 // raw - raw, parsed - A raw IRC event
 // rawSend - message - When a raw message is sent out
@@ -35,6 +36,35 @@ const requiredSuccessConnect = [
 // globaluserstate - tags - Happens on successful login, tags contain information about user
 // userstate - channel, tags - Happens when you join a channel, tags contain information about user
 // host - channel, target[, viewers] - Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting
+
+/**
+ * Notes:
+ * Normal subs (usernotice): 
+ *   tags['msg-id'] = 'sub' or 'resub'
+ *   tags['msg-param-sub-plan'] = 'Prime', '1000', '2000', '3000'
+ *   tags['msg-param-cumulative-months'] = String number of months subscribed
+ * Gift subs (usernotice):
+ *   tags['msg-id'] = 'subgift' or 'anonsubgift'
+ *   tags['msg-param-sub-plan'] = 'Prime', '1000', '2000', '3000'
+ *   tags['msg-param-sender-count'] = String count of gifters total gifts
+ *   tags['msg-param-recipient-user-name'] = login of recipient
+ *   tags['msg-param-recipient-display-name'] = display name of recipient
+ *   tags['msg-param-cumulative-months'] = String number of months recipient subscribed
+ * Mass gift subs (usernotice):
+ *   Will first send a:
+ *   tags['msg-id'] = 'submysterygift'
+ *   tags['msg-param-sub-plan'] = 'Prime', '1000', '2000', '3000'
+ *   tags['msg-param-mass-gift-count'] = String number of subs that's being gifted
+ *   tags['msg-param-sender-count'] = String count of gifters total gifts (was 0 when admiralbahroo gave 100 subs to himself?)
+ *   Then all the subs will be sent as gift subs (see above)
+ * Bits (msg):
+ *   tags['bits'] = https://dev.twitch.tv/docs/irc/tags#privmsg-twitch-tags
+ * 
+ */
+
+// 
+// 
+// 
 
 // TODO: Handle Twitch RECONNECT command
 // https://dev.twitch.tv/docs/irc/commands/#reconnect-twitch-commands
@@ -195,10 +225,7 @@ class IRCClient extends EventEmitter {
                         }
                     }
                 } catch(err) {
-                    this.emit('error', new Error({
-                        data: rawLine,
-                        error: err
-                    }));
+                    this.emit('parseerror', rawLine, err);
                 }
             }
         });
