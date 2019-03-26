@@ -28,6 +28,28 @@ class Settings {
     compare(settings) {
         return compare(this.get(), settings);
     }
+
+    wrapElectron(electron, updateIRCRooms) {
+        const { ipcMain } = electron;
+
+        ipcMain.on('settings-compare', (event, args) => {
+            event.sender.send('settings-compare', this.compare(args));
+        });
+        
+        ipcMain.on('settings-set', (event, args) => {
+            const oldChannel = this.get().channel;
+            this.set(args);
+            const newChannel = this.get().channel;
+            if (oldChannel !== newChannel) {
+                updateIRCRooms();
+            }
+            event.sender.send('settings', this.get());
+        });
+        
+        ipcMain.on('settings-get', (event, args) => {
+            event.sender.send('settings', this.get());
+        });
+    }
 }
 
 // Returns true if the newObj has different values from oldObj (only compares similar keys)
@@ -62,4 +84,4 @@ function overwriteObj(oldObj, newObj) {
     }
 }
 
-module.exports = new Settings();
+module.exports = Settings;

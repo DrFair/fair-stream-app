@@ -30,13 +30,14 @@ class App extends Component {
   }
 
   setSettings(settings) {
-    return ipcRenderer.sendSync('settings-set', settings);
+    ipcRenderer.send('settings-set', settings);
   }
 
   componentDidMount() {
-    this.setState({
-      settings: ipcRenderer.sendSync('settings-get'),
-      status: ipcRenderer.sendSync('status-get')
+    ipcRenderer.on('settings', (event, data) => {
+      this.setState({
+        settings: data
+      });
     });
     
     ipcRenderer.on('status', (event, data) => {
@@ -46,7 +47,11 @@ class App extends Component {
       });
     });
 
+    ipcRenderer.send('settings-get');
+    ipcRenderer.send('status-get');
+
     ipcRenderer.on('notification', (event, data) => {
+      console.log("Got notification", data);
       // TODO: Do something with the notification
     });
   }
