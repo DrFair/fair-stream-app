@@ -15,19 +15,22 @@ class RoomTrackerWrapper extends EventEmitter {
      * @param {IRCClient} ircClient The Twitch IRC client
      */
     constructor(ircClient) {
+        super();
         this.rooms = [];
-        ircClient.addEventListener('join', (channel) => {
+        this.ircClient = ircClient;
+        ircClient.addListener('join', (channel) => {
             const index = this._getRoomObjIndex(channel);
             if (index === -1) {
                 const roomObj = {
                     channel: channel,
                     state: null
                 };
+                this.rooms.push(roomObj);
                 this.emit('join', channel);
                 this.emit('change', channel);
             }
         });
-        ircClient.addEventListener('part', (channel) => {
+        ircClient.addListener('part', (channel) => {
             const index = this._getRoomObjIndex(channel);
             if (index !== -1) {
                 this.rooms.splice(index, 1);
@@ -35,7 +38,7 @@ class RoomTrackerWrapper extends EventEmitter {
                 this.emit('change', channel);
             }
         });
-        ircClient.addEventListener('roomstate', (channel, tags) => {
+        ircClient.addListener('roomstate', (channel, tags) => {
             const roomObj = this._getRoomObj(channel);
             if (roomObj !== null) {
                 roomObj.state = tags;
