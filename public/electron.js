@@ -10,12 +10,70 @@ const settings = require('./settings.js');
 
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
+const IRCClient = require('./twitchIRC/IRCClient.js');
+const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
+const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
+
+const ircClient = new IRCClient();
+const roomTracker = new RoomTrackerWrapper(ircClient);
+const notifications = new NotificationsWrapper(ircClient);
+
+let mainWindow;
+
+let status = {
+  trackingChannel: null
+};
+
+// Check if channel room is joined, and if not, do it
+function checkIRCRooms() {
+  const channel = settings.get().channel;
+  if (ircClient.isReady() && channel !== null) {
+    // Leave all channels that's not needed
+    roomTracker.getChannels().forEach((room) => {
+      if (room.channel !== channel) {
+        ircClient.part(room.channel);
+      }
+    });
+    // Join channel that is being tracked
+    if (!roomTracker.isInChannel(channel)) {
+      ircClient.join(channel);
+    }
+  }
+}
+
+notifications.on('any', (event, channel, data) => {
+  if (channel === settings.get().channel) {
+    console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
+    if (mainWindow) mainWindow.webContents.send('notification', { event: event, data: data });
+  }
+});
+
+ircClient.on('ready', () => {
+  // Check in interval of 10 seconds
+  setInterval(checkIRCRooms, 10000);
+  checkIRCRooms();
+});
+
+roomTracker.on('change', () => {
+  const channel = settings.get().channel;
+  const oldTracking = status.trackingChannel;
+  status.trackingChannel = channel === null ? null : (roomTracker.isInChannel(channel) ? channel : null);
+  if (status.trackingChannel !== oldTracking) {
+    if (mainWindow) mainWindow.webContents.send('status', status);
+  }
+});
+
 ipcMain.on('settings-compare', (event, args) => {
   event.returnValue = settings.compare(args);
 });
 
 ipcMain.on('settings-set', (event, args) => {
+  const oldChannel = settings.get().channel;
   settings.set(args);
+  const newChannel = settings.get().channel;
+  if (oldChannel !== newChannel) {
+    checkIRCRooms();
+  }
   event.returnValue = settings.get(); // Returns the settings again
 });
 
@@ -23,7 +81,9 @@ ipcMain.on('settings-get', (event, args) => {
   event.returnValue = settings.get();
 });
 
-let mainWindow;
+ipcMain.on('status-get', (event, args) => {
+  event.returnValue = status;
+});
 
 function createWindow() {
   installExtension(REACT_DEVELOPER_TOOLS)

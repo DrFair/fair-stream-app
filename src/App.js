@@ -15,8 +15,10 @@ class App extends Component {
     };
     this.state = {
       route: 'settings',
-      settings: null
+      settings: null,
+      status : null
     };
+
     this.setRoute = this.setRoute.bind(this);
     this.setSettings = this.setSettings.bind(this);
   }
@@ -33,18 +35,31 @@ class App extends Component {
 
   componentDidMount() {
     this.setState({
-      settings: ipcRenderer.sendSync('settings-get')
+      settings: ipcRenderer.sendSync('settings-get'),
+      status: ipcRenderer.sendSync('status-get')
+    });
+    
+    ipcRenderer.on('status', (event, data) => {
+      console.log('Got status update', data);
+      this.setState({
+        status: data
+      });
+    });
+
+    ipcRenderer.on('notification', (event, data) => {
+      // TODO: Do something with the notification
     });
   }
 
   render() {
-    const { route, settings } = this.state;
+    const { route, settings, status } = this.state;
     const RouteComp = this.routes[route] || null;
     const childProps = {
       route: route,
       setRoute: this.setRoute,
       setSettings: this.setSettings,
-      settings: settings
+      settings: settings,
+      status : status
     };
     return (
       <div className="d-flex flex-column h-100">

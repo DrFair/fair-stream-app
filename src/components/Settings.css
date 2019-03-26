@@ -4,6 +4,14 @@
     font-style: italic;
 }
 
+.settings-note.good {
+    color: #4A4;
+}
+
+.settings-note.bad {
+    color: #A44;
+}
+
 .settings-apply {
     color: #FFF;
     background: #70a0c2;
