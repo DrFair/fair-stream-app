@@ -272,6 +272,13 @@ class IRCClient extends EventEmitter {
     }
 
     /**
+     * @returns {boolean} If connection is ready or not
+     */
+    isReady() {
+        return this.ready;
+    }
+
+    /**
      * Same as once, but will remove the listener if the callback returns true
      * @param {string} eventName The name of the event
      * @param {function} callback Event callback
