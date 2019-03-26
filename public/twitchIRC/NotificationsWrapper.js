@@ -9,6 +9,7 @@ const EventEmitter = require('events');
 // giftsub - channel, data, tags - When someone gifts another person a sub
 // massgiftsub - channel, data, tags - When someone mass gift subs to a channel
 // bits - channel, data, tags - When someone sends bit message to a channel
+// any - event, channel, data, tags - Any of the above events, with event being the event name
 
 // Data keys:
 // login -                      String -    The login of the user
@@ -88,14 +89,14 @@ class NotificationsWrapper extends EventEmitter {
             switch (tags['msg-id']) {
                 case 'sub': {
                     data.tier = tags['msg-param-sub-plan'];
-                    this.emit('sub', channel, data, tags);
+                    this.emitNotification('sub', channel, data, tags);
                     break;
                 }
                 case 'resub': {
                     data.msg = message;
                     data.months = Number(tags['msg-param-cumulative-months']);
                     data.tier = tags['msg-param-sub-plan'];
-                    this.emit('resub', channel, data, tags);
+                    this.emitNotification('resub', channel, data, tags);
                     break;
                 }
                 case 'subgift': {
@@ -133,7 +134,7 @@ class NotificationsWrapper extends EventEmitter {
                             channel: channel,
                             data: data,
                             timeout: new SmartTimeout(() => {
-                                this.emit('giftsub', channel, data, tags);
+                                this.emitNotification('giftsub', channel, data, tags);
                                 // Remove from list
                                 for (let i = 0; i < this.giftSubs.length; i++) {
                                     if (this.giftSubs[i] === obj) {
@@ -172,7 +173,7 @@ class NotificationsWrapper extends EventEmitter {
                         channel: channel,
                         data: data,
                         timeout: new SmartTimeout(() => {
-                            this.emit('massgiftsub', channel, data, tags);
+                            this.emitNotification('massgiftsub', channel, data, tags);
                             for (let i = 0; i < this.massGifters.length; i++) {
                                 if (this.massGifters[i] === obj) {
                                     this.massGifters.splice(i, 1);
@@ -200,9 +201,19 @@ class NotificationsWrapper extends EventEmitter {
                     msg: message,
                     bits: Number(tags.bits)
                 };
-                this.emit('bits', channel, data, tags);
+                this.emitNotification('bits', channel, data, tags);
             }
         });
+    }
+
+    /**
+     * Emit an 'any' event but also a normal event
+     * @param {string} eventName The name of the event
+     * @param  {...any} args The args/parameters of the event
+     */
+    emitNotification(eventName, ...args) {
+        this.emit('any', eventName, ...args);
+        this.emit(eventName, ...args);
     }
 
 }
