@@ -5,6 +5,7 @@ import NavBar from './components/Navbar.js';
 import Settings from './components/Settings.js';
 
 const { ipcRenderer } = window.electron;
+const { SETTINGS_GET, SETTINGS_SET, STATUS_GET, NOTIFICATION_NEW } = window.ipcEvents;
 
 class App extends Component {
   constructor(props) {
@@ -30,27 +31,27 @@ class App extends Component {
   }
 
   setSettings(settings) {
-    ipcRenderer.send('settings-set', settings);
+    ipcRenderer.send(SETTINGS_SET, settings);
   }
 
   componentDidMount() {
-    ipcRenderer.on('settings', (event, data) => {
+    ipcRenderer.on(SETTINGS_GET, (event, data) => {
       this.setState({
         settings: data
       });
     });
     
-    ipcRenderer.on('status', (event, data) => {
+    ipcRenderer.on(STATUS_GET, (event, data) => {
       console.log('Got status update', data);
       this.setState({
         status: data
       });
     });
 
-    ipcRenderer.send('settings-get');
-    ipcRenderer.send('status-get');
+    ipcRenderer.send(SETTINGS_GET);
+    ipcRenderer.send(STATUS_GET);
 
-    ipcRenderer.on('notification', (event, data) => {
+    ipcRenderer.on(NOTIFICATION_NEW, (event, data) => {
       console.log("Got notification", data);
       // TODO: Do something with the notification
     });

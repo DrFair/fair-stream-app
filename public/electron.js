@@ -14,6 +14,8 @@ const IRCClient = require('./twitchIRC/IRCClient.js');
 const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
 const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
 
+const { STATUS_GET, NOTIFICATION_NEW } = require('./ipcEvents');
+
 let mainWindow, settings, ircClient, roomTracker, notifications;
 
 let status = {
@@ -71,14 +73,14 @@ app.on('ready', () => {
   
   settings.wrapElectron(electron, updateIRCRooms);
         
-  ipcMain.on('status-get', (event, args) => {
-    event.sender.send('status', status);
+  ipcMain.on(STATUS_GET, (event, args) => {
+    event.sender.send(STATUS_GET, status);
   });
   
   notifications.on('any', (event, channel, data) => {
     if (channel === settings.get().channel) {
       console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
-      if (mainWindow) mainWindow.webContents.send('notification', { event: event, data: data });
+      if (mainWindow) mainWindow.webContents.send(NOTIFICATION_NEW, { event: event, data: data });
     }
   });
   
@@ -93,7 +95,7 @@ app.on('ready', () => {
     const oldTracking = status.trackingChannel;
     status.trackingChannel = channel === null ? null : (roomTracker.isInChannel(channel) ? channel : null);
     if (status.trackingChannel !== oldTracking) {
-      if (mainWindow) mainWindow.webContents.send('status', status);
+      if (mainWindow) mainWindow.webContents.send(STATUS_GET, status);
     }
   });
 });

@@ -1,3 +1,4 @@
+const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE } = require('./ipcEvents');
 class Settings {
     constructor() {
         // Default settings:
@@ -32,22 +33,23 @@ class Settings {
     wrapElectron(electron, updateIRCRooms) {
         const { ipcMain } = electron;
 
-        ipcMain.on('settings-compare', (event, args) => {
-            event.sender.send('settings-compare', this.compare(args));
+        ipcMain.on(SETTINGS_COMPARE, (event, args) => {
+            event.sender.send(SETTINGS_COMPARE, this.compare(args));
         });
         
-        ipcMain.on('settings-set', (event, args) => {
+        ipcMain.on(SETTINGS_SET, (event, args) => {
             const oldChannel = this.get().channel;
             this.set(args);
             const newChannel = this.get().channel;
             if (oldChannel !== newChannel) {
                 updateIRCRooms();
             }
-            event.sender.send('settings', this.get());
+            // Send back new settings
+            event.sender.send(SETTINGS_GET, this.get());
         });
         
-        ipcMain.on('settings-get', (event, args) => {
-            event.sender.send('settings', this.get());
+        ipcMain.on(SETTINGS_GET, (event, args) => {
+            event.sender.send(SETTINGS_GET, this.get());
         });
     }
 }

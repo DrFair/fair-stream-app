@@ -4,3 +4,5 @@
 
 window.require = require;
 window.electron = require('electron');
+
+window.ipcEvents = require('./ipcEvents');
