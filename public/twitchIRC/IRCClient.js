@@ -59,12 +59,7 @@ const requiredSuccessConnect = [
  *   Then all the subs will be sent as gift subs (see above)
  * Bits (msg):
  *   tags['bits'] = https://dev.twitch.tv/docs/irc/tags#privmsg-twitch-tags
- * 
  */
-
-// 
-// 
-// 
 
 // TODO: Handle Twitch RECONNECT command
 // https://dev.twitch.tv/docs/irc/commands/#reconnect-twitch-commands
@@ -111,6 +106,8 @@ class IRCClient extends EventEmitter {
         this.closeCalled = false;
         this.socket = null;
 
+        this.dataBuffer = '';
+
         if (this.options.autoConnect) {
             this.connect();
         }
@@ -137,6 +134,22 @@ class IRCClient extends EventEmitter {
         this.socket.addListener('data', (data) => {
             if (typeof(data) !== 'string') {
                 data = data.toString();
+            }
+            // We split the data up into lines.
+            // It's possible that the data we receive doesn't end with a new line, and we have to store that and wait for an ending
+            data = this.dataBuffer + data;
+            if (!data.endsWith('\n')) {
+                const lastNl = data.lastIndexOf('\n');
+                // console.log('Storing last part (' + lastNl + ',' + data.length + '):');
+                if (lastNl === -1) {
+                    this.dataBuffer = data;
+                    return; // Don't process data
+                } else {
+                    this.dataBuffer = data.substring(lastNl + 1);
+                    data = data.substring(0, lastNl);
+                }
+            } else {
+                this.dataBuffer = '';
             }
             const lines = data.split('\n');
             for (let i = 0; i < lines.length; i++) {
