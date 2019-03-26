@@ -1,4 +1,6 @@
 const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE } = require('./ipcEvents');
+const electronSettings = require('electron-settings');
+
 class Settings {
     constructor() {
         // Default settings:
@@ -13,6 +15,7 @@ class Settings {
             }
         };
         this.current = this.default;
+        this.wrapped = false;
         this.get = this.get.bind(this);
         this.set = this.set.bind(this);
     }
@@ -24,6 +27,9 @@ class Settings {
     // Deep overwrites the current settings (like react setState)
     set(settings) {
         overwriteObj(this.get(), settings);
+        if (this.wrapped) {
+            electronSettings.set('settings', this.get());
+        } 
     }
 
     compare(settings) {
@@ -31,7 +37,9 @@ class Settings {
     }
 
     wrapElectron(electron, updateIRCRooms) {
+        this.wrapped = true;
         const { ipcMain } = electron;
+        this.set(electronSettings.get('settings', {}));
 
         ipcMain.on(SETTINGS_COMPARE, (event, args) => {
             event.sender.send(SETTINGS_COMPARE, this.compare(args));
