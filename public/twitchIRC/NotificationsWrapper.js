@@ -14,6 +14,7 @@ const EventEmitter = require('events');
 // Data keys:
 // login -                      String -    The login of the user
 // displayName -                String -    The display name of the user
+// id -                         String -    The ID of the message from Twitch
 // systemMsg -                  String -    Only on sub events. The system message from Twitch
 // tier -                       String -    Only on sub events. Either 'Prime', '1000', '2000' or '3000'
 // msg -                        String -    Only on resub and bits. The message sent to chat
@@ -84,7 +85,8 @@ class NotificationsWrapper extends EventEmitter {
             const data = {
                 login: login,
                 displayName: tags['display-name'],
-                systemMsg: tags['system-msg'].replace(/\\s/g, ' ')
+                systemMsg: tags['system-msg'].replace(/\\s/g, ' '),
+                id: tags.id
             };
             switch (tags['msg-id']) {
                 case 'sub': {
@@ -198,6 +200,7 @@ class NotificationsWrapper extends EventEmitter {
                 const data = {
                     login: login,
                     displayName: tags['display-name'],
+                    id: tags.id,
                     msg: message,
                     bits: Number(tags.bits)
                 };
