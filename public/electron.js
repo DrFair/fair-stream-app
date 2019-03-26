@@ -8,6 +8,8 @@ const isDev = require('electron-is-dev');
 
 const settings = require('./settings.js');
 
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+
 ipcMain.on('settings-compare', (event, args) => {
   event.returnValue = settings.compare(args);
 });
@@ -24,19 +26,9 @@ ipcMain.on('settings-get', (event, args) => {
 let mainWindow;
 
 function createWindow() {
-  // Try and find react dev tools from chrome extensions
-  if (process.env.LOCALAPPDATA) {
-    const chromeExPath = path.join(process.env.LOCALAPPDATA, 'Google/Chrome/User Data/Default/Extensions');
-    const exID = 'fmkadmapgofadopljbjfkapdkoienihi';
-    const exPath = path.join(chromeExPath, exID);
-    // Find version folder (just use the first folder found)
-    const exVersionDirs = fs.readdirSync(exPath);
-    if (exVersionDirs.length > 0) {
-      const exVersionPath = path.join(exPath, exVersionDirs[0]);
-      console.log(`Found react dev extension at ${exVersionPath}`)
-      BrowserWindow.addDevToolsExtension(exVersionPath);
-    }
-  }
+  installExtension(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension: ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
   
   let size = 580;
   let minSize = 150;
