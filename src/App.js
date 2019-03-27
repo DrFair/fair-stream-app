@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import Titlebar from './components/Titlebar.js';
-import NavBar from './components/Navbar.js';
-import Settings from './components/Settings.js';
+import Titlebar from './components/Titlebar';
+import NavBar from './components/Navbar';
+import Settings from './components/Settings';
+import NotificationsTab from './components/NotificationsTab';
 
 const { ipcRenderer } = window.electron;
 const { SETTINGS_GET, SETTINGS_SET, STATUS_GET, NOTIFICATION_NEW } = window.ipcEvents;
@@ -11,7 +12,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.routes = {
-      'notifications': NotificationsRoute,
+      'notifications': NotificationsTab,
       'settings': Settings
     };
     this.state = {
@@ -78,13 +79,5 @@ class App extends Component {
     );
   }
 }
-
-const NotificationsRoute = () => {
-  return (
-    <div>
-      This is notifications
-    </div>
-  )
-};
 
 export default App;
