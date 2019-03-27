@@ -41,7 +41,7 @@ class IPCWrapper {
   }
 
   send(eventName, ...args) {
-    ipcRenderer.send(eventName, args);
+    ipcRenderer.send(eventName, ...args);
   }
 
   dispose() {
