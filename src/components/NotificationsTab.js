@@ -31,30 +31,13 @@ class NotificationsTab extends Component {
         }
     }
 
-    updateFilteredList() {
-        const { list } = this.state;
-        const filters = this.props.settings.notificationFilters;
-        if (filters) {
-            this.setState({
-                filteredList: list.filter((e) => {
-                    return true; // TODO: Add filter conditions
-                })
-            });
-        } else {
-            this.setState({
-                filteredList: list.map((e) => e)
-            });
-        }
-        this.setState()
-    }
-
     componentDidMount() {
         this.ipcWrapper = new IPCWrapper();
         this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
             console.log('GOT', data);
             const { list } = this.state;
             this.setState({
-                list: list.push(data)
+                list: list.concat(data)
             });
         });
 

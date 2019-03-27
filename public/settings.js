@@ -17,7 +17,7 @@ class Settings {
         };
         this.current = this.default;
         this.notificationsHistory = [];
-        
+
         this.wrapped = false;
         this.updateIRCRooms = null;
 
@@ -53,7 +53,7 @@ class Settings {
         const { ipcMain } = electron;
         this.set(electronSettings.get('settings', {}));
         const settingsHistory = electronSettings.get('notificationsHistory', []);
-        this.notificationsHistory.push(settingsHistory);
+        this.notificationsHistory = this.notificationsHistory.concat(settingsHistory);
 
         ipcMain.on(SETTINGS_COMPARE, (event, args) => {
             event.sender.send(SETTINGS_COMPARE, this.compare(args));
@@ -73,7 +73,8 @@ class Settings {
             const filteredList = this.notificationsHistory.filter((e) => {
                 return true; // TODO: Add filter conditions
             });
-            const maxLength = args || 100;
+            args = Number(args);
+            let maxLength = isNaN(args) ? 100 : Math.max(1, args);
             if (filteredList.length > maxLength) {
                 filteredList.length = maxLength; // Limit list to max length
             }
