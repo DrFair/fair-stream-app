@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Titlebar from './components/Titlebar';
 import NavBar from './components/Navbar';
-import Settings from './components/Settings';
+import Settings from './components/SettingsTab';
 import NotificationsTab from './components/NotificationsTab';
 
 const { ipcRenderer } = window.electron;

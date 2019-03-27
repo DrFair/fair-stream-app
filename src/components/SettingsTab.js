@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Settings.css';
+import './SettingsTab.css';
 
 export class Settings extends Component {
   constructor(props) {
