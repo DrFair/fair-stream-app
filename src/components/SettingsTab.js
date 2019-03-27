@@ -16,11 +16,13 @@ export class Settings extends Component {
         <div className="form-group">
           <label>Channel name</label>
           <input className="form-control form-control-sm" type="text" style={{ maxWidth: 400 }} defaultValue={settings ? settings.channel : ''} ref={this.channelInput} />
-          <span className="settings-note">Your channel name is used to track notifications like subs, bits etc.</span><br/>
+          <p className="settings-note">
+            Your channel name is used to track notifications like subs, bits etc.
+          </p>
           { status !== null && status.trackingChannel !== null ? (
-            <span className="settings-note good">Currently tracking {status.trackingChannel}</span>
+            <p className="settings-note good">Currently tracking {status.trackingChannel}</p>
           ) : (
-            <span className="settings-note bad">Not currently tracking any channel</span>
+            <p className="settings-note bad">Not currently tracking any channel</p>
           ) }
         </div>
         <button 
