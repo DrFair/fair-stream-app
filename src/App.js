@@ -4,9 +4,9 @@ import Titlebar from './components/Titlebar';
 import NavBar from './components/Navbar';
 import Settings from './components/SettingsTab';
 import NotificationsTab from './components/NotificationsTab';
+import IPCWrapper from './ipcWrapper';
 
-const { ipcRenderer } = window.electron;
-const { SETTINGS_GET, SETTINGS_SET, STATUS_GET, NOTIFICATION_NEW } = window.ipcEvents;
+const { SETTINGS_GET, SETTINGS_SET, STATUS_GET } = window.ipcEvents;
 
 class App extends Component {
   constructor(props) {
@@ -32,30 +32,30 @@ class App extends Component {
   }
 
   setSettings(settings) {
-    ipcRenderer.send(SETTINGS_SET, settings);
+    this.ipcWrapper.send(SETTINGS_SET, settings);
   }
 
   componentDidMount() {
-    ipcRenderer.on(SETTINGS_GET, (event, data) => {
+    this.ipcWrapper = new IPCWrapper();
+    this.ipcWrapper.on(SETTINGS_GET, (event, data) => {
       this.setState({
         settings: data
       });
     });
     
-    ipcRenderer.on(STATUS_GET, (event, data) => {
+    this.ipcWrapper.on(STATUS_GET, (event, data) => {
       console.log('Got status update', data);
       this.setState({
         status: data
       });
     });
 
-    ipcRenderer.send(SETTINGS_GET);
-    ipcRenderer.send(STATUS_GET);
+    this.ipcWrapper.send(SETTINGS_GET);
+    this.ipcWrapper.send(STATUS_GET);
+  }
 
-    ipcRenderer.on(NOTIFICATION_NEW, (event, data) => {
-      console.log("Got notification", data);
-      // TODO: Do something with the notification
-    });
+  componentWillUnmount() {
+      this.ipcWrapper.dispose();
   }
 
   render() {

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import './NotificationsTab.css';
+import IPCWrapper from '../ipcWrapper';
 
-const { ipcRenderer } = window.electron;
-const { NOTIFICATION_HISTORY } = window.ipcEvents;
+const { NOTIFICATION_NEW, NOTIFICATION_HISTORY } = window.ipcEvents;
 
 class NotificationsTab extends Component {
     constructor(props) {
@@ -49,14 +49,25 @@ class NotificationsTab extends Component {
     }
 
     componentDidMount() {
-        ipcRenderer.once(NOTIFICATION_HISTORY, (event, data) => {
+        this.ipcWrapper = new IPCWrapper();
+        this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
+            console.log('GOT', data);
             const { list } = this.state;
             this.setState({
                 list: list.push(data)
             });
         });
 
-        ipcRenderer.send(NOTIFICATION_HISTORY);
+        this.ipcWrapper.send(NOTIFICATION_HISTORY);
+
+        this.ipcWrapper.on(NOTIFICATION_NEW, (event, data) => {
+          console.log("Got notification", data);
+          // TODO: Do something with the notification
+        });
+    }
+
+    componentWillUnmount() {
+        this.ipcWrapper.dispose();
     }
 
     render() {
