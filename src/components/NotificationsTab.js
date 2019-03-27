@@ -45,7 +45,11 @@ class NotificationsTab extends Component {
 
         this.ipcWrapper.on(NOTIFICATION_NEW, (event, data) => {
           console.log("Got notification", data);
-          // TODO: Do something with the notification
+          let list = this.state.list.map((e) => e); // Need to make a copy of list
+          list.unshift(data);
+          this.setState({
+              list: list
+          });
         });
     }
 
@@ -54,9 +58,12 @@ class NotificationsTab extends Component {
     }
 
     render() {
+        const { list } = this.state;
         return (
             <div className="m-4">
-                Hello from notifications tab!
+                {list.map((e) => (
+                    <p key={e.id}>{e.systemMsg ? e.systemMsg : e.msg}</p>
+                ))}
             </div>
         )
     }
