@@ -79,8 +79,11 @@ app.on('ready', () => {
   
   notifications.on('any', (event, channel, data) => {
     if (channel === settings.get().channel) {
+      data.event = event;
+      data.channel = channel;
       console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
-      if (mainWindow) mainWindow.webContents.send(NOTIFICATION_NEW, { event: event, data: data });
+      if (mainWindow) mainWindow.webContents.send(NOTIFICATION_NEW, data);
+      settings.submitNotification(data);
     }
   });
   
