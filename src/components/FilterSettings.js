@@ -61,7 +61,7 @@ class FilterSettings extends Component {
       <>
         <div className="form-group">
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showbits : true} ref={this.showBits} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showBits : true} ref={this.showBits} onChange={this.updateApply} />
             <label className="form-check-label">Show bits</label>
           </div>
           <label>Minimum bits</label>
