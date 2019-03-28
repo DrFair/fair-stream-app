@@ -23,15 +23,15 @@ let status = {
 // Check if channel room is joined, and if not, do it
 function updateIRCRooms() {
   const channel = settings.get().channel;
-  if (ircClient.isReady() && channel !== null) {
+  if (ircClient.isReady()) {
     // Leave all channels that's not needed
     roomTracker.getChannels().forEach((room) => {
-      if (room.channel !== channel) {
+      if (channel === null || room.channel !== channel) {
         ircClient.part(room.channel);
       }
     });
     // Join channel that is being tracked
-    if (!roomTracker.isInChannel(channel)) {
+    if (channel !== null && !roomTracker.isInChannel(channel)) {
       ircClient.join(channel);
     }
   }
@@ -80,8 +80,7 @@ app.on('ready', () => {
 
   ipcMain.on(NOTIFICATION_DUMMY, (event, name) => {
     if (!name) name = 'any';
-    let channel = settings.get().channel || 'twitch';
-    console.log(name, channel);
+    let channel = settings.get().channel || 'twitch'; // Will not accept notifications anyway if it's null
     notifications.sendDummyNotification(name, channel);
   });
 

@@ -14,7 +14,8 @@ class ChannelSettings extends Component {
 
   updateApply() {
     const { settings } = this.props;
-    const channelValue = this.channelInput.current.value;
+    let channelValue = this.channelInput.current.value.trim();
+    if (channelValue === '') channelValue = null;
     this.setState({
       canApply: canApply()
     });
@@ -53,10 +54,11 @@ class ChannelSettings extends Component {
             <p className="settings-note bad">Not currently tracking any channel</p>
           ) }
         </div>
-        <button 
+        <button
           className="btn btn-primary"
           onClick={() => {
             let { value } = this.channelInput.current;
+            value = value.trim();
             if (value === '') value = null;
             setSettings({
               channel: value
