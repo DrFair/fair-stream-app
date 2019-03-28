@@ -62,7 +62,7 @@ class NotificationsTab extends Component {
         return (
             <div className="m-4">
                 {list.map((e) => (
-                    <p key={e.id}>{e.systemMsg ? e.systemMsg : e.msg}</p>
+                    <p key={e.id}>#{e.channel} {e.systemMsg ? e.systemMsg : e.msg}</p>
                 ))}
             </div>
         )

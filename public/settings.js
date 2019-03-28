@@ -47,6 +47,31 @@ class Settings {
         return compare(this.get(), settings);
     }
 
+    // Returns true if it's a valid notification given the filters
+    isFilteredNotification(notification) {
+        const { event } = notification;
+        const filters = this.get().notificationFilters;
+        switch(notification.event) {
+            case 'bits': {
+                if (!filters.showBits) return false;
+                return notification.bits >= filters.minBits;
+            }
+            case 'sub': {
+                return filters.showNewsubs;
+            }
+            case 'resub': {
+                return filters.showResubs;
+            }
+            case 'giftsub': {
+                return filters.showGiftsubs;
+            }
+            case 'massgiftsub': {
+                return filters.showMassGiftsubs;
+            }
+        }
+        return true;
+    }
+
     wrapElectron(electron, updateIRCRooms) {
         if (this.wrapped) throw new Error('Already wrapped');
         this.wrapped = true;
@@ -72,7 +97,7 @@ class Settings {
 
         ipcMain.on(NOTIFICATION_HISTORY, (event, args) => {
             const filteredList = this.notificationsHistory.filter((e) => {
-                return true; // TODO: Add filter conditions
+                return this.isFilteredNotification(e);
             });
             args = Number(args);
             let maxLength = isNaN(args) ? 100 : Math.max(1, args);

@@ -83,7 +83,7 @@ app.on('ready', () => {
       data.event = event;
       data.channel = channel;
       console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
-      if (mainWindow) mainWindow.webContents.send(NOTIFICATION_NEW, data);
+      if (mainWindow && settings.isFilteredNotification(data)) mainWindow.webContents.send(NOTIFICATION_NEW, data);
       settings.submitNotification(data);
     }
   });
