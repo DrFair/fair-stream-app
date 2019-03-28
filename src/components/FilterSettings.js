@@ -87,7 +87,7 @@ class FilterSettings extends Component {
           className="btn settings-apply"
           onClick={() => {
             const showBitsValue = this.showBits.current.checked;
-            const minBitsValue = Number(this.minBits.current.value);
+            let minBitsValue = Number(this.minBits.current.value);
             const showNewsubsValue = this.showNewsubs.current.checked;
             const showResubsValue = this.showResubs.current.checked;
             const showGiftsubsValue = this.showGiftsubs.current.checked;
