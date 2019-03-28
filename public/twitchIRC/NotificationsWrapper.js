@@ -87,7 +87,7 @@ class NotificationsWrapper extends EventEmitter {
         login: login,
         displayName: tags['display-name'],
         id: tags.id,
-        timestamp: tags['tmi-sent-ts'],
+        timestamp: Number(tags['tmi-sent-ts']),
         systemMsg: tags['system-msg'].replace(/\\s/g, ' ')
       };
       switch (tags['msg-id']) {
@@ -203,7 +203,7 @@ class NotificationsWrapper extends EventEmitter {
           login: login,
           displayName: tags['display-name'],
           id: tags.id,
-          timestamp: tags['tmi-sent-ts'],
+          timestamp: Number(tags['tmi-sent-ts']),
           msg: message,
           bits: Number(tags.bits)
         };
