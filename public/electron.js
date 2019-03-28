@@ -12,7 +12,7 @@ const IRCClient = require('./twitchIRC/IRCClient.js');
 const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
 const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
 
-const { STATUS_GET, NOTIFICATION_NEW } = require('./ipcEvents');
+const { STATUS_GET, NOTIFICATION_NEW, NOTIFICATION_DUMMY } = require('./ipcEvents');
 
 let mainWindow, settings, ircClient, roomTracker, notifications;
 
@@ -76,6 +76,13 @@ app.on('ready', () => {
 
   ipcMain.on(STATUS_GET, (event, args) => {
     event.sender.send(STATUS_GET, status);
+  });
+
+  ipcMain.on(NOTIFICATION_DUMMY, (event, name) => {
+    if (!name) name = 'any';
+    let channel = settings.get().channel || 'twitch';
+    console.log(name, channel);
+    notifications.sendDummyNotification(name, channel);
   });
 
   notifications.on('any', (event, channel, data) => {

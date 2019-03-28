@@ -6,3 +6,7 @@ window.require = require;
 window.electron = require('electron');
 
 window.ipcEvents = require('./ipcEvents');
+
+window.dummyNotification = (eventName) => {
+  electron.ipcRenderer.send(window.ipcEvents.NOTIFICATION_DUMMY, eventName);
+};

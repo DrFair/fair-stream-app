@@ -4,5 +4,6 @@ module.exports = {
   SETTINGS_COMPARE: 'settings-compare',
   STATUS_GET: 'status-get',
   NOTIFICATION_NEW: 'notification',
-  NOTIFICATION_HISTORY: 'notification-history'
+  NOTIFICATION_HISTORY: 'notification-history',
+  NOTIFICATION_DUMMY: 'notification-dummy'
 };
