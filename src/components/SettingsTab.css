@@ -1,19 +1,19 @@
 .settings-note {
-    color: #888;
-    font-size: 80%;
-    font-style: italic;
-    margin-bottom: 0;
+  color: #888;
+  font-size: 80%;
+  font-style: italic;
+  margin-bottom: 0;
 }
 
 .settings-note.good {
-    color: #4A4;
+  color: #4A4;
 }
 
 .settings-note.bad {
-    color: #A44;
+  color: #A44;
 }
 
 .divider {
-    width: 100%;
-    border-bottom: 1px solid #555;
+  width: 100%;
+  border-bottom: 1px solid #555;
 }

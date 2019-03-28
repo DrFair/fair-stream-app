@@ -1,39 +1,41 @@
 .titlebar {
-    -webkit-user-select: none;
-    /* -webkit-app-region: drag; */
-    min-height: 30px !important;
-    height: 30px;
-    background-color: #264459;
-    line-height: 30px;
-    color: #DDD;
+  z-index: 9001;
+  position: relative;
+  -webkit-user-select: none;
+  /* -webkit-app-region: drag; */
+  min-height: 30px !important;
+  height: 30px;
+  background-color: #264459;
+  line-height: 30px;
+  color: #DDD;
 }
 
 .window-dragable {
-    -webkit-app-region: drag;
+  -webkit-app-region: drag;
 }
 
 .window-control {
-    font-family: "SegMDL2";
-    font-size: 10px;
-    min-width: 10px !important;
+  font-family: "SegMDL2";
+  font-size: 10px;
+  min-width: 10px !important;
 }
 
 .window-minimize:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .window-maximize:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .window-close:hover {
-    background-color: rgba(255, 0, 0, 0.4);
+  background-color: rgba(255, 0, 0, 0.4);
 }
 
 .window-resizer {
-    -webkit-app-region: no-drag;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 4px;
+  -webkit-app-region: no-drag;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 4px;
 }
