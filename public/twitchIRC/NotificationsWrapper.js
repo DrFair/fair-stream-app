@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const uuidv4 = require('uuid/v4');
 
 // This is a wrapper that parses Twitch notifications
 // Events:
@@ -217,6 +218,105 @@ class NotificationsWrapper extends EventEmitter {
     this.emit(eventName, ...args);
   }
 
+
+  /**
+   * Get a dummy notification object
+   * @param {String} eventName The event name (sub, resub, giftsub, massgiftsub, bits, any)
+   */
+  getDummyNotification(eventName, channel) {
+    // First generate basic object
+    const nameAffix = getRandomAffix();
+    let login = 'dummyfan' + nameAffix;
+    let displayName = 'DummyFan' + nameAffix;
+    const obj = {
+      login: login,
+      displayName: displayName,
+      id: uuidv4(),
+      timestamp: Date.now()
+    };
+    switch (eventName) {
+      case 'sub': {
+        obj.tier = randomOneOf('Prime', '1000', '2000', '3000');
+        const tierMsg = obj.tier === 'Prime' ? 'Twitch Prime' : 'Tier ' + obj.tier.charAt(0);
+        obj.systemMsg = `${obj.displayName} subscribed with ${tierMsg}.`;
+        return obj;
+      }
+      case 'resub': {
+        obj.tier = randomOneOf('Prime', '1000', '2000', '3000');
+        obj.months = 1 + Math.floor(Math.random() * 23);
+        const tierMsg = obj.tier === 'Prime' ? 'Twitch Prime' : 'Tier ' + obj.tier.charAt(0);
+        obj.systemMsg = `${obj.displayName} subscribed with ${tierMsg}. They've subscribed for ${obj.months} months!`;
+        if (Math.floor(Math.random() * 3) !== 1) {
+          obj.msg = `Dummy message ${getRandomAffix()}`;
+        }
+        return obj;
+      }
+      case 'giftsub': {
+        obj.tier = randomOneOf('1000', '2000', '3000');
+        obj.recepient = getDummyRecepient();
+        obj.senderCount = Math.max(0, Math.floor(Math.random() * 500) - 200);
+        const systemMsgAffix = obj.senderCount > 1 ? ` They have given ${obj.senderCount} Gift Subs in the channel!` : '';
+        obj.systemMsg = `${obj.displayName} gifted a Tier ${obj.tier.charAt(0)} sub to ${obj.recepient.displayName}!` + systemMsgAffix;
+        obj.months = Math.floor(Math.random() * 12);
+        return obj;
+      }
+      case 'massgiftsub': {
+        obj.tier = randomOneOf('1000', '2000', '3000');
+        obj.massCount = randomOneOf(5, 5, 5, 10, 10, 100);
+        obj.senderCount = Math.max(0, Math.floor(Math.random() * 500) - 200) + obj.massCount;
+        const community = channel ? channel : 'Unknown'
+        obj.systemMsg = `${obj.displayName} is gifting ${obj.massCount} Tier ${obj.tier.charAt(0)} to ${community}'s community! They've gifted a total of ${obj.senderCount} in the channel!`;
+        obj.recepients = [];
+        for (let i = 0; i < obj.massCount; i++) {
+          obj.recepients.push(getDummyRecepient());
+        }
+        return obj;
+      }
+      case 'bits': {
+        obj.bits = randomOneOf(1, 100, 1000, 10000);
+        obj.msg = `Dummy message ${getRandomAffix()} cheer${obj.bits}`;
+        return obj;
+      }
+      case 'any': {
+        return this.getDummyNotification(randomOneOf('sub', 'resub', 'giftsub', 'massgiftsub', 'bits'));
+      }
+    }
+    // Should never reach this
+    throw new Error('Unknown event ' + eventName);
+  }
+
+  /**
+   * Emit a dummy notification event (tags will not be included)
+   * @param {string} eventName The event name (sub, resub, giftsub, massgiftsub, bits, any)
+   * @param {string} channel The channel name
+   */
+  sendDummyNotification(eventName, channel) {
+    if (eventName === 'any') eventName = randomOneOf('sub', 'resub', 'giftsub', 'massgiftsub', 'bits');
+    const obj = this.getDummyNotification(eventName, channel);
+    this.emitNotification(eventName, channel, obj);
+  }
+
+}
+
+function randomOneOf(...items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function getDummyRecepient() {
+  const recipientAffix = getRandomAffix();
+  return {
+    login: 'dummytarget' + recipientAffix,
+    displayName: 'DummyTaget' + recipientAffix
+  };
+}
+
+function getRandomAffix() {
+  let affix = '';
+  for (let i = 0; i < 5; i++) {
+    let num = Math.floor(Math.random() * 10);
+    affix += num;
+  }
+  return affix;
 }
 
 module.exports = NotificationsWrapper;
