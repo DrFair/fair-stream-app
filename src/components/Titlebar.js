@@ -9,6 +9,23 @@ class Titlebar extends Component {
     this.state = {
       update: 0
     };
+    this.update = this.update.bind(this);
+  }
+
+  update() {
+    this.setState({
+      update: this.state.update + 1
+    });
+  }
+  
+  componentDidMount() {
+    BrowserWindow.on('maximize', this.update);
+    BrowserWindow.on('unmaximize', this.update);
+  }
+
+  componentWillUnmount() {
+    BrowserWindow.removeListener('maximize', this.update);
+    BrowserWindow.removeListener('unmaximize', this.update);
   }
 
   render() {
@@ -40,9 +57,6 @@ class Titlebar extends Component {
               } else {
                 BrowserWindow.maximize();
               }
-              this.setState({
-                update: this.state.update + 1
-              });
             }
           }}
         >
