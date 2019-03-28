@@ -18,7 +18,7 @@ class App extends Component {
     this.state = {
       route: 'settings',
       settings: null,
-      status : null
+      status: null
     };
 
     this.setRoute = this.setRoute.bind(this);
@@ -42,7 +42,7 @@ class App extends Component {
         settings: data
       });
     });
-    
+
     this.ipcWrapper.on(STATUS_GET, (event, data) => {
       console.log('Got status update', data);
       this.setState({
@@ -55,7 +55,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-      this.ipcWrapper.dispose();
+    this.ipcWrapper.dispose();
   }
 
   render() {
@@ -66,7 +66,7 @@ class App extends Component {
       setRoute: this.setRoute,
       setSettings: this.setSettings,
       settings: settings,
-      status : status
+      status: status
     };
     return (
       <div className="d-flex flex-column h-100">

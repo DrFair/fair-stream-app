@@ -17,7 +17,7 @@ class Titlebar extends Component {
       update: this.state.update + 1
     });
   }
-  
+
   componentDidMount() {
     BrowserWindow.on('maximize', this.update);
     BrowserWindow.on('unmaximize', this.update);
@@ -38,7 +38,7 @@ class Titlebar extends Component {
         <div className="px-1 flex-fill text-center window-dragable">
           Fair Stream App
         </div>
-        <div 
+        <div
           className="px-2 window-minimize window-control"
           onClick={() => {
             if (BrowserWindow) {
@@ -48,7 +48,7 @@ class Titlebar extends Component {
         >
           <span>&#xE921;</span>
         </div>
-        <div 
+        <div
           className="px-2 window-maximize window-control"
           onClick={() => {
             if (BrowserWindow) {
@@ -62,7 +62,7 @@ class Titlebar extends Component {
         >
           {maximized ? <span>&#xE923;</span> : <span>&#xE922;</span>}
         </div>
-        <div 
+        <div
           className="px-2 window-close window-control"
           onClick={() => {
             if (BrowserWindow) {

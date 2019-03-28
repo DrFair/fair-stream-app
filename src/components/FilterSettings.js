@@ -30,7 +30,7 @@ class FilterSettings extends Component {
       canApply: canApply()
     });
 
-    
+
     function canApply() {
       if (!filters) return false;
       if (showBitsValue !== filters.showBits) return true;
@@ -83,7 +83,7 @@ class FilterSettings extends Component {
             <label className="form-check-label">Show mass gift subs</label>
           </div>
         </div>
-        <button 
+        <button
           className="btn settings-apply"
           onClick={() => {
             const showBitsValue = this.showBits.current.checked;
