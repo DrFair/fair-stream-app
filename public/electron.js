@@ -44,7 +44,7 @@ function createWindow() {
       .then((name) => console.log(`Added Extension: ${name}`))
       .catch((err) => console.log('An error occurred: ', err));
   }
-  
+
   let size = 580;
   let minSize = 150;
   mainWindow = new BrowserWindow({
@@ -69,15 +69,15 @@ app.on('ready', () => {
   ircClient = new IRCClient();
   roomTracker = new RoomTrackerWrapper(ircClient);
   notifications = new NotificationsWrapper(ircClient);
-  
+
   settings = new Settings();
-  
+
   settings.wrapElectron(electron, updateIRCRooms);
-        
+
   ipcMain.on(STATUS_GET, (event, args) => {
     event.sender.send(STATUS_GET, status);
   });
-  
+
   notifications.on('any', (event, channel, data) => {
     if (channel === settings.get().channel) {
       data.event = event;
@@ -87,13 +87,13 @@ app.on('ready', () => {
       settings.submitNotification(data);
     }
   });
-  
+
   ircClient.on('ready', () => {
     // Check in interval of 10 seconds
     setInterval(updateIRCRooms, 10000);
     updateIRCRooms();
   });
-  
+
   roomTracker.on('change', () => {
     const channel = settings.get().channel;
     const oldTracking = status.trackingChannel;
