@@ -21,8 +21,7 @@ const EventEmitter = require('events');
 // msg -                        String -    Only on resub and bits. The message sent to chat
 // bits -                       Number -    Only on bits. The number of bits in the message
 // months -                     Number -    Only on resub. The total number of months to display
-// recepient -                  String -    Only on giftsub. The recepient twitch login
-// recepientDisplayName -       String -    Only on giftsub. The recepient display name
+// recepient -                  Object -    Only on giftsub. See recipient object below
 // senderCount -                Number -    Only on gift and mass gift subs. The number of subs user has given to channel
 // massCount -                  Number -    Only on massgiftsub. The count of subs that's being given away
 // recepients -                 Array -     Only on massgiftsub. The array of recepients (object see below)
@@ -104,8 +103,10 @@ class NotificationsWrapper extends EventEmitter {
           break;
         }
         case 'subgift': {
-          data.recepient = tags['msg-param-recipient-user-name'];
-          data.recepientDisplayName = tags['msg-param-recipient-display-name'];
+          data.recepient = {
+            login: tags['msg-param-recipient-user-name'],
+            displayName: tags['msg-param-recipient-display-name']
+          };
           data.msg = message;
           data.months = Number(tags['msg-param-months']);
           data.senderCount = Number(tags['msg-param-sender-count']);
@@ -117,10 +118,7 @@ class NotificationsWrapper extends EventEmitter {
             const massGift = this.massGifters[i];
             if (massGift.key === key) {
               if (massGift.data.recepients.length < massGift.data.massCount) {
-                massGift.data.recepients.push({
-                  login: data.recepient,
-                  displayName: data.recepientDisplayName
-                });
+                massGift.data.recepients.push(data.recepient);
                 if (massGift.data.recepients.length >= massGift.data.massCount) {
                   massGift.timeout.call();
                 } else {
@@ -163,10 +161,7 @@ class NotificationsWrapper extends EventEmitter {
           for (let i = 0; i < this.giftSubs.length; i++) {
             const giftSub = this.giftSubs[i];
             if (giftSub.key === key && data.recepient.length < data.massCount) {
-              data.recepient.push({
-                login: giftSub.data.login,
-                displayName: giftSub.data.displayName
-              });
+              data.recepients.push(giftSub.data.recepient);
               giftSub.timeout.clear();
               this.giftSubs.splice(i, 1);
               i--;
