@@ -19,25 +19,6 @@ class NotificationsTab extends Component {
     this.updateFromHistory = this.updateFromHistory.bind(this);
   }
 
-  addNotifications(...notifications) {
-    const filters = this.props.settings.notificationFilters;
-    const filtered = notifications.filter((e) => {
-      if (filters) {
-        return true; // TODO: Add filter conditions
-      } else {
-        return true;
-      }
-    })
-    const { list } = this.state;
-    // Add them to the beginning of the list
-    if (filtered.length > 0) {
-      list.unshift(filtered);
-      this.setState({
-        list: list
-      });
-    }
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.settings !== prevProps.settings) {
       this.updateFromHistory();
