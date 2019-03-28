@@ -54,7 +54,7 @@ class ChannelSettings extends Component {
           ) }
         </div>
         <button 
-          className="btn settings-apply"
+          className="btn btn-primary"
           onClick={() => {
             let { value } = this.channelInput.current;
             if (value === '') value = null;

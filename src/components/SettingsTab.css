@@ -13,21 +13,6 @@
     color: #A44;
 }
 
-.settings-apply {
-    color: #FFF;
-    background: #70a0c2;
-    border-color: #4d88b3;
-}
-
-.settings-apply[disabled]:hover {
-    background: #70a0c2;
-    color: #FFF;
-}
-
-.settings-apply:hover {
-    background: #94b8d1;
-}
-
 .divider {
     width: 100%;
     border-bottom: 1px solid #555;

@@ -84,7 +84,7 @@ class FilterSettings extends Component {
           </div>
         </div>
         <button
-          className={'btn settings-apply' + (smallApply ? ' btn-sm' : '')}
+          className={'btn btn-primary' + (smallApply ? ' btn-sm' : '')}
           onClick={() => {
             const showBitsValue = this.showBits.current.checked;
             let minBitsValue = Number(this.minBits.current.value);
