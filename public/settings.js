@@ -12,7 +12,8 @@ class Settings {
                 minBits: 0,
                 showNewsubs: true,
                 showResubs: true,
-                showGiftsubs: true
+                showGiftsubs: true,
+                showMassGiftsubs: true
             }
         };
         this.current = this.default;
