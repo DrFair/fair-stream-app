@@ -54,7 +54,7 @@ class FilterSettings extends Component {
   }
 
   render() {
-    const { settings, setSettings } = this.props;
+    const { settings, setSettings, onApply, smallApply } = this.props;
     const filters = settings ? settings.notificationFilters : undefined;
     const { canApply } = this.state;
     return (
@@ -84,7 +84,7 @@ class FilterSettings extends Component {
           </div>
         </div>
         <button
-          className="btn settings-apply"
+          className={'btn settings-apply' + (smallApply ? ' btn-sm' : '')}
           onClick={() => {
             const showBitsValue = this.showBits.current.checked;
             let minBitsValue = Number(this.minBits.current.value);
@@ -103,6 +103,7 @@ class FilterSettings extends Component {
                 showMassGiftsubs: showMassGiftsubsValue
               }
             });
+            if (onApply) onApply();
           }}
           disabled={!canApply}
         >
