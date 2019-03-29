@@ -306,7 +306,7 @@ function getDummyRecepient() {
   const recipientAffix = getRandomAffix();
   return {
     login: 'dummytarget' + recipientAffix,
-    displayName: 'DummyTaget' + recipientAffix
+    displayName: 'DummyTarget' + recipientAffix
   };
 }
 
