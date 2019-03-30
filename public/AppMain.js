@@ -96,7 +96,7 @@ class AppMain extends EventEmitter {
   
     this.roomTracker.on('change', () => {
       const channel = this.settings.get().channel;
-      const oldTracking = status.trackingChannel;
+      const oldTracking = this.status.trackingChannel;
       this.status.trackingChannel = channel === null ? null : (this.roomTracker.isInChannel(channel) ? channel : null);
       if (this.status.trackingChannel !== oldTracking) {
         if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
