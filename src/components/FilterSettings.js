@@ -8,6 +8,7 @@ class FilterSettings extends Component {
       canApply: false
     };
 
+    this.showHidden = React.createRef();
     this.showBits = React.createRef();
     this.minBits = React.createRef();
     this.showNewsubs = React.createRef();
@@ -20,6 +21,7 @@ class FilterSettings extends Component {
   updateApply() {
     const { settings } = this.props;
     const filters = settings ? settings.notificationFilters : undefined;
+    const showHiddenValue = this.showHidden.current.checked;
     const showBitsValue = this.showBits.current.checked;
     const minBitsValue = Number(this.minBits.current.value);
     const showNewsubsValue = this.showNewsubs.current.checked;
@@ -33,6 +35,7 @@ class FilterSettings extends Component {
 
     function canApply() {
       if (!filters) return false;
+      if (showHiddenValue !== filters.showHidden) return true;
       if (showBitsValue !== filters.showBits) return true;
       if (minBitsValue !== filters.minBits) return true;
       if (showNewsubsValue !== filters.showNewsubs) return true;
@@ -61,6 +64,10 @@ class FilterSettings extends Component {
       <>
         <div className="form-group">
           <div className="form-check">
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showHidden : true} ref={this.showHidden} onChange={this.updateApply} />
+            <label className="form-check-label">Show hidden</label>
+          </div>
+          <div className="form-check">
             <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showBits : true} ref={this.showBits} onChange={this.updateApply} />
             <label className="form-check-label">Show bits</label>
           </div>
@@ -86,6 +93,7 @@ class FilterSettings extends Component {
         <button
           className={'btn btn-primary' + (smallApply ? ' btn-sm' : '')}
           onClick={() => {
+            const showHiddenValue = this.showHidden.current.checked;
             const showBitsValue = this.showBits.current.checked;
             let minBitsValue = Number(this.minBits.current.value);
             const showNewsubsValue = this.showNewsubs.current.checked;
@@ -95,6 +103,7 @@ class FilterSettings extends Component {
             if (isNaN(minBitsValue)) minBitsValue = 0;
             setSettings({
               notificationFilters: {
+                showHidden: showHiddenValue,
                 showBits: showBitsValue,
                 minBits: minBitsValue,
                 showNewsubs: showNewsubsValue,
