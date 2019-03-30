@@ -95,19 +95,20 @@ class NotificationContent extends Component {
     super(props)
   
     this.state = {
-       expanded: false,
+       expanded: true,
        canExpand: false
     };
     this.content = React.createRef();
   }
 
   componentDidMount() {
-    const { current } = this.content;
-    if (current && current.offsetWidth < current.scrollWidth) {
-      this.setState({
-        canExpand: true
-      });
-    }
+    // This is not really working when it's built. Not sure
+    // const { current } = this.content;
+    // if (current && current.offsetWidth < current.scrollWidth) {
+    //   this.setState({
+    //     canExpand: true
+    //   });
+    // }
   }
 
   getText() {
