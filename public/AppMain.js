@@ -57,7 +57,7 @@ class AppMain extends EventEmitter {
   
     ipcMain.on(NOTIFICATION_DUMMY, (event, name) => {
       if (!name) name = 'any';
-      let channel = this.settings.get().channel || 'twitch'; // Will not accept notifications anyway if it's null
+      let channel = this.settings.get().channel || 'dummychannel'; // Will not accept notifications anyway if it's null
       this.notiTracker.sendDummyNotification(name, channel);
     });
 
@@ -77,13 +77,13 @@ class AppMain extends EventEmitter {
     });
   
     this.notiTracker.on('any', (event, channel, data) => {
-      if (channel === this.settings.get().channel) {
+      if (channel === this.settings.get().channel || channel === 'dummychannel') {
         data._id = data.id;
         delete data._id;
         data.event = event;
         data.channel = channel;
         console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
-        if (mainWindow && this.settings.isFilteredNotification(data)) mainWindow.webContents.send(NOTIFICATION_NEW, data);
+        if (this.mainWindow && this.settings.isFilteredNotification(data)) this.mainWindow.webContents.send(NOTIFICATION_NEW, data);
         this.notiDB.insert(data);
       }
     });
@@ -99,10 +99,10 @@ class AppMain extends EventEmitter {
       const oldTracking = status.trackingChannel;
       this.status.trackingChannel = channel === null ? null : (this.roomTracker.isInChannel(channel) ? channel : null);
       if (this.status.trackingChannel !== oldTracking) {
-        if (mainWindow) mainWindow.webContents.send(STATUS_GET, this.status);
+        if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
       }
     });
-    
+
     this.initialized = true;
   }
 
