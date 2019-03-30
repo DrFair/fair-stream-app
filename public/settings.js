@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron');
-const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE, NOTIFICATION_HISTORY } = require('./ipcEvents');
+const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE } = require('./ipcEvents');
 const electronSettings = require('electron-settings');
 
 class Settings {
@@ -19,7 +19,6 @@ class Settings {
       }
     };
     this.current = this.default;
-    this.notificationsHistory = [];
 
     this.wrapped = false;
     this.app = null;
@@ -53,7 +52,7 @@ class Settings {
   isFilteredNotification(notification) {
     const { event } = notification;
     const filters = this.get().notificationFilters;
-    switch (notification.event) {
+    switch (event) {
       case 'bits': {
         if (!filters.showBits) return false;
         return notification.bits >= filters.minBits;
@@ -74,13 +73,39 @@ class Settings {
     return true;
   }
 
+  // Will return the NEDB notification style filters
+  getNEDBNotificationFilters() {
+    // It's possible to use the $where, but I am not sure if that is slower or not (need to benchmark)
+    // const self = this;
+    // return { $where: function () { return self.isFilteredNotification(this); } };
+    const filters = this.get().notificationFilters;
+    const or = [];
+    if (filters.showBits) {
+      or.push({
+        event: 'bits',
+        bits: { $gte: filters.minBits }
+      });
+    }
+    if (filters.showNewsubs) {
+      or.push({ event: 'sub' });
+    }
+    if (filters.showResubs) {
+      or.push({ event: 'resub' });
+    }
+    if (filters.showGiftsubs) {
+      or.push({ event: 'giftsub' });
+    }
+    if (filters.showMassGiftsubs) {
+      or.push({ event: 'massgiftsub' });
+    }
+    return { $or: or };
+  }
+
   wrapApp(app) {
     if (this.wrapped) throw new Error('Already wrapped');
     this.app = app;
     this.wrapped = true;
     this.set(electronSettings.get('settings', {}));
-    const settingsHistory = electronSettings.get('notificationsHistory', []);
-    this.notificationsHistory = this.notificationsHistory.concat(settingsHistory);
 
     ipcMain.on(SETTINGS_COMPARE, (event, args) => {
       event.sender.send(SETTINGS_COMPARE, this.compare(args));
@@ -95,32 +120,6 @@ class Settings {
     ipcMain.on(SETTINGS_GET, (event, args) => {
       event.sender.send(SETTINGS_GET, this.get());
     });
-
-    ipcMain.on(NOTIFICATION_HISTORY, (event, args) => {
-      args = Number(args);
-      let maxLength = isNaN(args) ? 100 : Math.max(1, args);
-      const filteredList = [];
-      // Since this history could be big, we iterate through it and stop once we have enough
-      for (let i = 0; i < this.notificationsHistory.length; i++) {
-        if (filteredList.length > maxLength) break;
-        const notification = this.notificationsHistory[i];
-        if (this.isFilteredNotification(notification)) {
-          filteredList.push(notification);
-        }
-      }
-      event.sender.send(NOTIFICATION_HISTORY, filteredList);
-    });
-  }
-
-  submitNotification(notification) {
-    this.notificationsHistory.unshift(notification);
-    const historyOverflow = this.notificationsHistory.length - this.get().historySize;
-    if (historyOverflow > 0) {
-      this.notificationsHistory.splice(100, historyOverflow);
-    }
-    if (this.wrapped) {
-      electronSettings.set('notificationsHistory', this.notificationsHistory);
-    }
   }
 }
 

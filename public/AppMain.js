@@ -1,4 +1,4 @@
-const { BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const EventEmitter = require('events');
 
 const fs = require('fs');
@@ -12,7 +12,9 @@ const IRCClient = require('./twitchIRC/IRCClient.js');
 const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
 const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
 
-const { STATUS_GET, NOTIFICATION_NEW, NOTIFICATION_DUMMY } = require('./ipcEvents');
+const Datastore = require('nedb');
+
+const { STATUS_GET, NOTIFICATION_HISTORY, NOTIFICATION_NEW, NOTIFICATION_DUMMY, } = require('./ipcEvents');
 
 class AppMain extends EventEmitter {
   constructor(app) {
@@ -22,7 +24,8 @@ class AppMain extends EventEmitter {
     this.settings = null;
     this.ircClient = null;
     this.roomTracker = null;
-    this.notifications = null;
+    this.notiTracker = null;
+    this.notiDB = null; // Notifications datastore
     this.initialized = false;
 
     this.status = {
@@ -36,7 +39,13 @@ class AppMain extends EventEmitter {
     this.settings = new Settings();
     this.ircClient = new IRCClient();
     this.roomTracker = new RoomTrackerWrapper(this.ircClient);
-    this.notifications = new NotificationsWrapper(this.ircClient);
+    this.notiTracker = new NotificationsWrapper(this.ircClient);
+    this.notiDB = new Datastore({
+      filename: path.join(app.getPath('userData'), 'notifications.db'),
+      autoload: true
+    });
+    // Compact datastore every hour
+    this.notiDB.persistence.setAutocompactionInterval(1000 * 60 * 60);
 
     this.createWindow();
 
@@ -49,16 +58,32 @@ class AppMain extends EventEmitter {
     ipcMain.on(NOTIFICATION_DUMMY, (event, name) => {
       if (!name) name = 'any';
       let channel = this.settings.get().channel || 'twitch'; // Will not accept notifications anyway if it's null
-      this.notifications.sendDummyNotification(name, channel);
+      this.notiTracker.sendDummyNotification(name, channel);
+    });
+
+    ipcMain.on(NOTIFICATION_HISTORY, (event, args) => {
+      args = Number(args);
+      let maxLength = isNaN(args) ? 100 : Math.max(1, args);
+      const time = Date.now();
+      this.notiDB.find(this.settings.getNEDBNotificationFilters()).sort({ timestamp: -1 }).limit(maxLength).exec((err, docs) => {
+        if (err) {
+          console.log('Error getting filtered notifications:', err)
+        } else {
+          // console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
+          event.sender.send(NOTIFICATION_HISTORY, docs);
+        }
+      });
     });
   
-    this.notifications.on('any', (event, channel, data) => {
+    this.notiTracker.on('any', (event, channel, data) => {
       if (channel === this.settings.get().channel) {
+        data._id = data.id;
+        delete data._id;
         data.event = event;
         data.channel = channel;
         console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
         if (mainWindow && this.settings.isFilteredNotification(data)) mainWindow.webContents.send(NOTIFICATION_NEW, data);
-        this.settings.submitNotification(data);
+        this.notiDB.insert(data);
       }
     });
   
