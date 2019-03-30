@@ -75,30 +75,32 @@ class Settings {
 
   // Will return the NEDB notification style filters
   getNEDBNotificationFilters() {
-    // It's possible to use the $where, but I am not sure if that is slower or not (need to benchmark)
-    // const self = this;
-    // return { $where: function () { return self.isFilteredNotification(this); } };
-    const filters = this.get().notificationFilters;
-    const or = [];
-    if (filters.showBits) {
-      or.push({
-        event: 'bits',
-        bits: { $gte: filters.minBits }
-      });
-    }
-    if (filters.showNewsubs) {
-      or.push({ event: 'sub' });
-    }
-    if (filters.showResubs) {
-      or.push({ event: 'resub' });
-    }
-    if (filters.showGiftsubs) {
-      or.push({ event: 'giftsub' });
-    }
-    if (filters.showMassGiftsubs) {
-      or.push({ event: 'massgiftsub' });
-    }
-    return { $or: or };
+    // For now we just use $where. Quick benchmarks said it takes about the same time as other filters,
+    // but I am not sure about it when we get to bigger datastores.
+    // The normal filters are included below
+    const self = this;
+    return { $where: function () { return self.isFilteredNotification(this); } };
+    // const filters = this.get().notificationFilters;
+    // const or = [];
+    // if (filters.showBits) {
+    //   or.push({
+    //     event: 'bits',
+    //     bits: { $gte: filters.minBits }
+    //   });
+    // }
+    // if (filters.showNewsubs) {
+    //   or.push({ event: 'sub' });
+    // }
+    // if (filters.showResubs) {
+    //   or.push({ event: 'resub' });
+    // }
+    // if (filters.showGiftsubs) {
+    //   or.push({ event: 'giftsub' });
+    // }
+    // if (filters.showMassGiftsubs) {
+    //   or.push({ event: 'massgiftsub' });
+    // }
+    // return { $or: or };
   }
 
   wrapApp(app) {

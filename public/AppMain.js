@@ -61,15 +61,16 @@ class AppMain extends EventEmitter {
       this.notiTracker.sendDummyNotification(name, channel);
     });
 
-    ipcMain.on(NOTIFICATION_HISTORY, (event, args) => {
-      args = Number(args);
-      let maxLength = isNaN(args) ? 100 : Math.max(1, args);
+    ipcMain.on(NOTIFICATION_HISTORY, (event, count) => {
+      count = Number(count);
+      count = isNaN(count) ? 100 : Math.max(1, count);
+      const filters = this.settings.getNEDBNotificationFilters();
       const time = Date.now();
-      this.notiDB.find(this.settings.getNEDBNotificationFilters()).sort({ timestamp: -1 }).limit(maxLength).exec((err, docs) => {
+      this.notiDB.find(filters).sort({ timestamp: -1 }).limit(count).exec((err, docs) => {
         if (err) {
           console.log('Error getting filtered notifications:', err)
         } else {
-          // console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
+          console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
           event.sender.send(NOTIFICATION_HISTORY, docs);
         }
       });
