@@ -7,7 +7,13 @@ import Notification from './Notification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faFilter, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const { NOTIFICATION_NEW, NOTIFICATION_HISTORY } = window.ipcEvents;
+const {
+  NOTIFICATION_NEW,
+  NOTIFICATION_HISTORY,
+  NOTIFICATION_DELETE,
+  NOTIFICATON_HIDE,
+  NOTIFICATON_UNHIDE
+} = window.ipcEvents;
 
 class NotificationsTab extends Component {
   constructor(props) {
@@ -40,6 +46,56 @@ class NotificationsTab extends Component {
     this.setState({
       loading: true
     });
+  }
+
+  deleteNotification(id) {
+    const index = this.getNotificationIndex(id);
+    if (index !== -1) {
+      const list = this.state.list.map(e => e);
+      list.splice(index, 1);
+      this.setState({
+        list: list
+      });
+    }
+    this.ipcWrapper.send(NOTIFICATION_DELETE, id);
+  }
+
+  hideNotification(id) {
+    const index = this.getNotificationIndex(id);
+    if (index !== -1) {
+      const list = this.state.list.map(e => e);
+      const { settings } = this.props;
+      const filters = settings ? settings.notificationFilters : undefined;
+      if (filters.showHidden) {
+        list[index].hidden = true;
+      } else {
+        list.splice(index, 1);
+      }
+      this.setState({
+        list: list
+      });
+    }
+    this.ipcWrapper.send(NOTIFICATON_HIDE, id);
+  }
+
+  unhideNotification(id) {
+    const index = this.getNotificationIndex(id);
+    if (index !== -1) {
+      const list = this.state.list.map(e => e);
+      list[index].hidden = undefined;
+      this.setState({
+        list: list
+      });
+    }
+    this.ipcWrapper.send(NOTIFICATON_UNHIDE, id);
+  }
+
+  getNotificationIndex(id) {
+    const { list } = this.state;
+    for (let i = 0; i < list.length; i++) {
+      if (list[i]._id === id) return i;
+    }
+    return -1;
   }
 
   componentDidMount() {
@@ -103,7 +159,12 @@ class NotificationsTab extends Component {
           </>
         ) : list.map((e) => (
           <div key={e._id}>
-            <Notification item={e} />
+            <Notification
+              item={e}
+              remove={() => this.deleteNotification(e._id)}
+              hide={() => this.hideNotification(e._id)}
+              unhide={() => this.unhideNotification(e._id)}
+            />
           </div>
         ))}
       </div>

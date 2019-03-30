@@ -5,5 +5,8 @@ module.exports = {
   STATUS_GET: 'status-get',
   NOTIFICATION_NEW: 'notification',
   NOTIFICATION_HISTORY: 'notification-history',
-  NOTIFICATION_DUMMY: 'notification-dummy'
+  NOTIFICATION_DUMMY: 'notification-dummy',
+  NOTIFICATION_DELETE: 'notification-delete',
+  NOTIFICATON_HIDE: 'notification-hide',
+  NOTIFICATON_UNHIDE: 'notification-unhide'
 };

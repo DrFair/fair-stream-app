@@ -14,7 +14,15 @@ const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
 
 const Datastore = require('nedb');
 
-const { STATUS_GET, NOTIFICATION_HISTORY, NOTIFICATION_NEW, NOTIFICATION_DUMMY, } = require('./ipcEvents');
+const {
+  STATUS_GET,
+  NOTIFICATION_HISTORY,
+  NOTIFICATION_NEW,
+  NOTIFICATION_DUMMY,
+  NOTIFICATION_DELETE,
+  NOTIFICATON_HIDE,
+  NOTIFICATON_UNHIDE
+} = require('./ipcEvents');
 
 class AppMain extends EventEmitter {
   constructor(app) {
@@ -59,6 +67,18 @@ class AppMain extends EventEmitter {
       if (!name) name = 'any';
       let channel = this.settings.get().channel || 'dummychannel'; // Will not accept notifications anyway if it's null
       this.notiTracker.sendDummyNotification(name, channel);
+    });
+  
+    ipcMain.on(NOTIFICATION_DELETE, (event, id) => {
+      this.notiDB.remove({ _id: id });
+    });
+  
+    ipcMain.on(NOTIFICATON_HIDE, (event, id) => {
+      this.notiDB.update({ _id: id }, { $set: { hidden: true } });
+    });
+  
+    ipcMain.on(NOTIFICATON_UNHIDE, (event, id) => {
+      this.notiDB.update({ _id: id }, { $unset: { hidden: true } });
     });
 
     ipcMain.on(NOTIFICATION_HISTORY, (event, count) => {
