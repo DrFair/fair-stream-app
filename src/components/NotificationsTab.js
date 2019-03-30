@@ -13,7 +13,8 @@ class NotificationsTab extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      list: []
+      list: [],
+      loading: false
     };
     this.filterSettingsOverlay = React.createRef();
 
@@ -30,11 +31,15 @@ class NotificationsTab extends Component {
     this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
       console.log('GOT', data);
       this.setState({
-        list: data
+        list: data,
+        loading: false
       });
     });
 
     this.ipcWrapper.send(NOTIFICATION_HISTORY);
+    this.setState({
+      loading: true
+    });
   }
 
   componentDidMount() {
@@ -56,7 +61,7 @@ class NotificationsTab extends Component {
   }
 
   render() {
-    const { list } = this.state;
+    const { list, loading } = this.state;
     return (
       <div className="mx-4 mt-1 mb-4">
         <div className="d-flex flex-row mb-2" style={{ whiteSpace: 'nowrap' }}>
@@ -87,7 +92,11 @@ class NotificationsTab extends Component {
             <Button variant="info" size="sm"><FontAwesomeIcon icon={faEyeSlash} /> Hide all</Button>
           </div>
         </div>
-        {list.length > 0 ? list.map((e) => (
+        {loading ? (
+          <>
+            <div>Loading notifications...</div>
+          </>
+        ) : list.length > 0 ? list.map((e) => (
           <div key={e.id}>
             <Notification item={e} />
           </div>
