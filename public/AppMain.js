@@ -102,6 +102,8 @@ class AppMain extends EventEmitter {
         if (mainWindow) mainWindow.webContents.send(STATUS_GET, this.status);
       }
     });
+    
+    this.initialized = true;
   }
 
   // Updates irc room
