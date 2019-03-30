@@ -1,3 +1,4 @@
+const { ipcMain } = require('electron');
 const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE, NOTIFICATION_HISTORY } = require('./ipcEvents');
 const electronSettings = require('electron-settings');
 
@@ -21,7 +22,7 @@ class Settings {
     this.notificationsHistory = [];
 
     this.wrapped = false;
-    this.updateIRCRooms = null;
+    this.app = null;
 
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
@@ -39,8 +40,8 @@ class Settings {
       electronSettings.set('settings', this.get());
     }
     const newChannel = this.get().channel;
-    if (this.updateIRCRooms !== null && oldChannel !== newChannel) {
-      this.updateIRCRooms();
+    if (this.wrapped && oldChannel !== newChannel) {
+      this.app.updateIRCRooms();
     }
   }
 
@@ -73,11 +74,10 @@ class Settings {
     return true;
   }
 
-  wrapElectron(electron, updateIRCRooms) {
+  wrapApp(app) {
     if (this.wrapped) throw new Error('Already wrapped');
+    this.app = app;
     this.wrapped = true;
-    this.updateIRCRooms = updateIRCRooms;
-    const { ipcMain } = electron;
     this.set(electronSettings.get('settings', {}));
     const settingsHistory = electronSettings.get('notificationsHistory', []);
     this.notificationsHistory = this.notificationsHistory.concat(settingsHistory);
