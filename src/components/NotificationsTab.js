@@ -42,7 +42,7 @@ class NotificationsTab extends Component {
       });
     });
 
-    this.ipcWrapper.send(NOTIFICATION_HISTORY);
+    this.ipcWrapper.send(NOTIFICATION_HISTORY, 100);
     this.setState({
       loading: true
     });
@@ -106,6 +106,7 @@ class NotificationsTab extends Component {
       console.log("Got notification", data);
       let list = this.state.list.map((e) => e); // Need to make a copy of list
       list.unshift(data);
+      if (list.length > 100) list.splice(100, list.length - 100);
       this.setState({
         list: list
       });
