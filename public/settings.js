@@ -96,13 +96,16 @@ class Settings {
     });
 
     ipcMain.on(NOTIFICATION_HISTORY, (event, args) => {
-      const filteredList = this.notificationsHistory.filter((e) => {
-        return this.isFilteredNotification(e);
-      });
       args = Number(args);
       let maxLength = isNaN(args) ? 100 : Math.max(1, args);
-      if (filteredList.length > maxLength) {
-        filteredList.length = maxLength; // Limit list to max length
+      const filteredList = [];
+      // Since this history could be big, we iterate through it and stop once we have enough
+      for (let i = 0; i < this.notificationsHistory.length; i++) {
+        if (filteredList.length > maxLength) break;
+        const notification = this.notificationsHistory[i];
+        if (this.isFilteredNotification(notification)) {
+          filteredList.push(notification);
+        }
       }
       event.sender.send(NOTIFICATION_HISTORY, filteredList);
     });
