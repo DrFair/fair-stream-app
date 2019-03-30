@@ -94,17 +94,18 @@ class NotificationsTab extends Component {
         </div>
         {loading ? (
           <>
-            <div>Loading notifications...</div>
+            <div>Loading...</div>
           </>
-        ) : list.length > 0 ? list.map((e) => (
-          <div key={e.id}>
-            <Notification item={e} />
-          </div>
-        )) : (
+        ) : null}
+        {list.length <= 0 && !loading ? (
           <>
             <div>No notifications to show :(</div>
           </>
-        )}
+        ) : list.map((e) => (
+          <div key={e._id}>
+            <Notification item={e} />
+          </div>
+        ))}
       </div>
     )
   }
