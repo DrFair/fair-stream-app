@@ -52,6 +52,7 @@ class Settings {
   isFilteredNotification(notification) {
     const { event } = notification;
     const filters = this.get().notificationFilters;
+    if (!filters.showHidden && notification.hidden) return false
     switch (event) {
       case 'bits': {
         if (!filters.showBits) return false;
@@ -81,6 +82,7 @@ class Settings {
     const self = this;
     return { $where: function () { return self.isFilteredNotification(this); } };
     // const filters = this.get().notificationFilters;
+    // TODO: Add showHidden filter
     // const or = [];
     // if (filters.showBits) {
     //   or.push({

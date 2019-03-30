@@ -70,7 +70,7 @@ class AppMain extends EventEmitter {
         if (err) {
           console.log('Error getting filtered notifications:', err)
         } else {
-          console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
+          // console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
           event.sender.send(NOTIFICATION_HISTORY, docs);
         }
       });
