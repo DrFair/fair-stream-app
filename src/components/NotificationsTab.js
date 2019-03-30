@@ -3,6 +3,7 @@ import './NotificationsTab.css';
 import IPCWrapper from '../ipcWrapper';
 import { Button, OverlayTrigger, Popover, InputGroup, FormControl } from 'react-bootstrap';
 import FilterSettings from './FilterSettings';
+import Notification from './Notification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faFilter, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
@@ -86,9 +87,15 @@ class NotificationsTab extends Component {
             <Button variant="info" size="sm"><FontAwesomeIcon icon={faEyeSlash} /> Hide all</Button>
           </div>
         </div>
-        {list.map((e) => (
-          <p key={e.id}>#{e.channel} {e.systemMsg ? e.systemMsg : e.msg}</p>
-        ))}
+        {list.length > 0 ? list.map((e) => (
+          <div key={e.id}>
+            <Notification item={e} />
+          </div>
+        )) : (
+          <>
+            <div>No notifications to show :(</div>
+          </>
+        )}
       </div>
     )
   }
