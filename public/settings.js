@@ -7,7 +7,6 @@ class Settings {
     // Default settings:
     this.default = {
       channel: null,
-      historySize: 1000, // The history size of unfiltered notifications
       notificationFilters: {
         showHidden: false,
         showBits: true,
