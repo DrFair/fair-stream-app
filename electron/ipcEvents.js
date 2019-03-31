@@ -1,12 +1,10 @@
-module.exports = {
-  SETTINGS_GET: 'settings-get',
-  SETTINGS_SET: 'settings-set',
-  SETTINGS_COMPARE: 'settings-compare',
-  STATUS_GET: 'status-get',
-  NOTIFICATION_NEW: 'notification',
-  NOTIFICATION_HISTORY: 'notification-history',
-  NOTIFICATION_DUMMY: 'notification-dummy',
-  NOTIFICATION_DELETE: 'notification-delete',
-  NOTIFICATON_HIDE: 'notification-hide',
-  NOTIFICATON_UNHIDE: 'notification-unhide'
-};
+export const SETTINGS_GET = 'settings-get';
+export const SETTINGS_SET = 'settings-set';
+export const SETTINGS_COMPARE = 'settings-compare';
+export const STATUS_GET = 'status-get';
+export const NOTIFICATION_NEW = 'notification';
+export const NOTIFICATION_HISTORY = 'notification-history';
+export const NOTIFICATION_DUMMY = 'notification-dummy';
+export const NOTIFICATION_DELETE = 'notification-delete';
+export const NOTIFICATON_HIDE = 'notification-hide';
+export const NOTIFICATON_UNHIDE = 'notification-unhide';

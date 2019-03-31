@@ -35,12 +35,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run build-ts",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "cross-env ELECTRON_USE_BUILD_FOLDER=true electron .",
-    "electron-dev": "concurrently --kill-others \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "electron-builder --c.extraMetadata.main=electron/electron.js --dir",
+    "build-ts": "tsc --noEmit false -m CommonJS --outDir build && rm -r build/src",
+    "electron": "cross-env electron .",
+    "electron-dev": "concurrently --kill-others \"cross-env BROWSER=none npm run start\" \"npm run build-ts && wait-on http://localhost:3000 && cross-env ELECTRON_USE_WEB=true electron .\"",
+    "electron-pack": "electron-builder --dir",
     "preelectron-pack": "npm run build"
   },
   "eslintConfig": {
@@ -52,10 +53,13 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "main": "electron/electron.js",
+  "main": "build/electron/electron.js",
   "homepage": "./",
   "build": {
     "appId": "fair-stream-app",
+    "extraMetadata": {
+      "main": "build/electron/electron.js"
+    },
     "files": [
       "electron/**/*",
       "build/**/*",

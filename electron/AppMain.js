@@ -142,6 +142,10 @@ class AppMain extends EventEmitter {
       }
     }
   }
+
+  getPublicPath() {
+    return process.env.ELECTRON_USE_WEB ? path.join(__dirname, '../../public/') : path.join(__dirname, '../');
+  }
   
   // Creates the main window
   createWindow() {
@@ -154,6 +158,7 @@ class AppMain extends EventEmitter {
   
     let size = 580;
     let minSize = 150;
+    const publicPath = this.getPublicPath();
     this.mainWindow = new BrowserWindow({
       width: Math.floor(size * 16 / 9),
       height: size,
@@ -162,11 +167,11 @@ class AppMain extends EventEmitter {
       frame: false,
       webPreferences: {
         nodeIntegration: false,
-        preload: path.join(__dirname, '/preload.js')
+        preload: path.join(publicPath, '/preload.js')
       },
-      icon: path.join(__dirname, '../public/favicon.ico')
+      icon: path.join(publicPath, '../favicon.ico')
     });
-    this.mainWindow.loadURL((!isDev || process.env.ELECTRON_USE_BUILD_FOLDER) ? `file://${path.join(__dirname, '../build/index.html')}` : 'http://localhost:3000');
+    this.mainWindow.loadURL(process.env.ELECTRON_USE_WEB ? 'http://localhost:3000' : `file://${path.join(publicPath, 'index.html')}`);
     this.mainWindow.on('closed', () => this.mainWindow = null);
   }
 }
