@@ -1,5 +1,5 @@
-const EventEmitter = require('events');
-const uuidv4 = require('uuid/v4');
+import EventEmitter from 'events';
+import uuidv4 from 'uuid/v4';
 
 // This is a wrapper that parses Twitch notifications
 // Events:

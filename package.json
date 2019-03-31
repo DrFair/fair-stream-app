@@ -39,7 +39,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-ts": "tsc --noEmit false -m CommonJS --outDir build && rm -r build/src",
-    "electron": "cross-env electron .",
+    "electron": "electron .",
     "electron-dev": "concurrently --kill-others \"cross-env BROWSER=none npm run start\" \"npm run build-ts && wait-on http://localhost:3000 && cross-env ELECTRON_USE_WEB=true electron .\"",
     "electron-pack": "electron-builder --dir",
     "preelectron-pack": "npm run build"

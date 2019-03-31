@@ -5,8 +5,14 @@
 window.require = require;
 window.electron = require('electron');
 
-window.ipcEvents = require('./ipcEvents');
+try {
+  // For production
+  window.ipcEvents = require('./electron/ipcEvents');
+} catch(e) {
+  // For dev
+  window.ipcEvents = require('../build/electron/ipcEvents');
+}
 
 window.dummyNotification = (eventName) => {
-  electron.ipcRenderer.send(window.ipcEvents.NOTIFICATION_DUMMY, eventName);
+  window.electron.ipcRenderer.send(window.ipcEvents.NOTIFICATION_DUMMY, eventName);
 };

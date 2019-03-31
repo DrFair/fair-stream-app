@@ -1,6 +1,6 @@
-const { ipcMain } = require('electron');
-const { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE } = require('./ipcEvents');
-const electronSettings = require('electron-settings');
+import { ipcMain } from 'electron';
+import { SETTINGS_GET, SETTINGS_SET, SETTINGS_COMPARE } from './ipcEvents';
+import electronSettings from 'electron-settings';
 
 class Settings {
   constructor() {
@@ -69,8 +69,10 @@ class Settings {
       case 'massgiftsub': {
         return filters.showMassGiftsubs;
       }
+      default: {
+        return true;
+      }
     }
-    return true;
   }
 
   // Will return the NEDB notification style filters

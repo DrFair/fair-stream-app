@@ -1,20 +1,18 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const EventEmitter = require('events');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import EventEmitter from 'events';
 
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
-const isDev = require('electron-is-dev');
+import path from 'path';
+import isDev from 'electron-is-dev';
 
-const Settings = require('./settings.js');
+import Settings from './settings.js';
 
-const IRCClient = require('./twitchIRC/IRCClient.js');
-const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
-const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
+import IRCClient from './twitchIRC/IRCClient.js';
+import RoomTrackerWrapper from './twitchIRC/RoomTrackerWrapper.js';
+import NotificationsWrapper from './twitchIRC/NotificationsWrapper.js';
 
-const Datastore = require('nedb');
+import Datastore from 'nedb';
 
-const {
+import {
   STATUS_GET,
   NOTIFICATION_HISTORY,
   NOTIFICATION_NEW,
@@ -22,7 +20,7 @@ const {
   NOTIFICATION_DELETE,
   NOTIFICATON_HIDE,
   NOTIFICATON_UNHIDE
-} = require('./ipcEvents');
+} from './ipcEvents';
 
 class AppMain extends EventEmitter {
   constructor(app) {
@@ -167,9 +165,9 @@ class AppMain extends EventEmitter {
       frame: false,
       webPreferences: {
         nodeIntegration: false,
-        preload: path.join(publicPath, '/preload.js')
+        preload: path.join(publicPath, 'preload.js')
       },
-      icon: path.join(publicPath, '../favicon.ico')
+      icon: path.join(publicPath, 'favicon.ico')
     });
     this.mainWindow.loadURL(process.env.ELECTRON_USE_WEB ? 'http://localhost:3000' : `file://${path.join(publicPath, 'index.html')}`);
     this.mainWindow.on('closed', () => this.mainWindow = null);

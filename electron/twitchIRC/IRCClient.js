@@ -1,5 +1,5 @@
-const net = require('net');
-const EventEmitter = require('events');
+import net from 'net';
+import EventEmitter from 'events';
 
 // This is a simple IRC Client that handles Twitch chat connections
 

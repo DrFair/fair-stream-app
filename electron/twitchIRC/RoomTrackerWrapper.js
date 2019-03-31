@@ -1,4 +1,4 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 // This keeps track of what channels/rooms that the Twitch IRC client is in
 // Also keeps track of room states. Like slow mode, sub mode, follower mode etc.
 

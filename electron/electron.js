@@ -1,5 +1,4 @@
-const electron = require('electron');
-const { app } = electron;
+import { app } from 'electron';
 
 const AppMain = require('./AppMain');
 
