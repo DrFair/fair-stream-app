@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './NotificationsTab.css';
-import IPCWrapper from '../ipcWrapper';
+import IPCWrapper from '../lib/IPCWrapper';
 import { Button, OverlayTrigger, Popover, InputGroup, FormControl } from 'react-bootstrap';
 import FilterSettings from './FilterSettings';
 import Notification from './Notification';

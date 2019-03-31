@@ -4,7 +4,7 @@ import Titlebar from './components/Titlebar';
 import NavBar from './components/Navbar';
 import Settings from './components/SettingsTab';
 import NotificationsTab from './components/NotificationsTab';
-import IPCWrapper from './ipcWrapper';
+import IPCWrapper from './lib/IPCWrapper';
 
 const { SETTINGS_GET, SETTINGS_SET, STATUS_GET } = window.ipcEvents;
 
