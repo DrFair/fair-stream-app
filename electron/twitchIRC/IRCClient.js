@@ -66,15 +66,14 @@ const requiredSuccessConnect = [
 
 class IRCClient extends EventEmitter {
   /**
-   * @param {object} options The client options.
-   * Possible options are:
-   * login = null - The login nick (leave null for anonymous).
-   * token = null - The login token. Required if login is not null.
-   * autoReconnect = true - Will auto reconnect shortly after connection is closed.
-   * requestCAP = true - Should request Twitch capabilities.
-   * autoConnect = true - Should try to connect with the construction.
+   * @param {object} options Optional. The client options.
+   * @param {string | null} options.login Optional. The login nick (leave null for anonymous).
+   * @param {string | null} options.token Optional. The login token. Required if login is not null.
+   * @param {string | null} options.autoReconnect Optional. Will auto reconnect shortly after connection is closed.
+   * @param {string | null} options.requestCAP Optional. Should request Twitch capabilities.
+   * @param {string | null} options.autoConnect Optional. Should try to connect with the construction.
    */
-  constructor(options) {
+  constructor(options = undefined) {
     super();
     // Default options
     this.options = {
@@ -235,6 +234,9 @@ class IRCClient extends EventEmitter {
                 if (isNaN(viewers)) viewers = undefined;
                 this.emit('host', pl.channel, target, viewers);
                 break;
+              default: {
+                // Do nothing on default
+              }
             }
           }
         } catch (err) {
