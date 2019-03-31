@@ -69,8 +69,10 @@ class Settings {
       case 'massgiftsub': {
         return filters.showMassGiftsubs;
       }
+      default: {
+        return true;
+      }
     }
-    return true;
   }
 
   // Will return the NEDB notification style filters

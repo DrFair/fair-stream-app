@@ -1,9 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const EventEmitter = require('events');
 
-const fs = require('fs');
 const path = require('path');
-const url = require('url');
 const isDev = require('electron-is-dev');
 
 const Settings = require('./settings.js');
@@ -85,7 +83,7 @@ class AppMain extends EventEmitter {
       count = Number(count);
       count = isNaN(count) ? 100 : Math.max(1, count);
       const filters = this.settings.getNEDBNotificationFilters();
-      const time = Date.now();
+      // const time = Date.now();
       this.notiDB.find(filters).sort({ timestamp: -1 }).limit(count).exec((err, docs) => {
         if (err) {
           console.log('Error getting filtered notifications:', err)

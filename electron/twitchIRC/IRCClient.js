@@ -426,8 +426,8 @@ const parserActions = [
   // Look for the command
   (data, obj) => {
     const endIndex = data.indexOf(" ");
-    const cmdData = endIndex == -1 ? data : data.substring(0, endIndex);
-    const out = endIndex == -1 ? null : data.substring(endIndex + 1);
+    const cmdData = endIndex === -1 ? data : data.substring(0, endIndex);
+    const out = endIndex === -1 ? null : data.substring(endIndex + 1);
     if (cmdData.length > 0) {
       obj.cmd = cmdData;
     }
