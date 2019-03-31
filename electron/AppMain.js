@@ -162,9 +162,9 @@ class AppMain extends EventEmitter {
       frame: false,
       webPreferences: {
         nodeIntegration: false,
-        preload: __dirname + '/preload.js'
+        preload: path.join(__dirname, '/preload.js')
       },
-      icon: __dirname + '/favicon.ico'
+      icon: path.join(__dirname, '../public/favicon.ico')
     });
     this.mainWindow.loadURL((!isDev || process.env.ELECTRON_USE_BUILD_FOLDER) ? `file://${path.join(__dirname, '../build/index.html')}` : 'http://localhost:3000');
     this.mainWindow.on('closed', () => this.mainWindow = null);

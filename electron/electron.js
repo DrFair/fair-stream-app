@@ -1,5 +1,5 @@
 const electron = require('electron');
-const { app, BrowserWindow, ipcMain } = electron;
+const { app } = electron;
 
 const AppMain = require('./AppMain');
 

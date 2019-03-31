@@ -36,7 +36,7 @@
     "eject": "react-scripts eject",
     "electron": "cross-env ELECTRON_USE_BUILD_FOLDER=true electron .",
     "electron-dev": "concurrently --kill-others \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "electron-builder --dir",
+    "electron-pack": "electron-builder --c.extraMetadata.main=electron/electron.js --dir",
     "preelectron-pack": "npm run build"
   },
   "eslintConfig": {
@@ -48,11 +48,12 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "main": "public/electron.js",
+  "main": "electron/electron.js",
   "homepage": "./",
   "build": {
     "appId": "fair-stream-app",
     "files": [
+      "electron/**/*",
       "build/**/*",
       "node_modules/**/*"
     ],
