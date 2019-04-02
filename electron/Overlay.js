@@ -8,6 +8,14 @@ class Overlay {
     this.info = {};
   }
 
+  getName() {
+    return this.info.name;
+  }
+
+  getVersion() {
+    return this.info.version;
+  }
+
   /**
    * Sets the event listener for once valid checks are done. Only one listener can be present at a time
    * @param {function: error} callback Error is undefined if no error was found and it's a valid overlay

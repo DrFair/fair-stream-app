@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const EventEmitter = require('events');
 
-const fs = require('fs');
 const path = require('path');
 const isDev = require('electron-is-dev');
 
@@ -10,6 +9,7 @@ const Settings = require('./settings.js');
 const IRCClient = require('./twitchIRC/IRCClient.js');
 const RoomTrackerWrapper = require('./twitchIRC/RoomTrackerWrapper.js');
 const NotificationsWrapper = require('./twitchIRC/NotificationsWrapper.js');
+const OverlayManager = require('./OverlayManager');
 
 const Datastore = require('nedb');
 
@@ -24,9 +24,8 @@ const {
 } = require('./ipcEvents');
 
 class AppMain extends EventEmitter {
-  constructor(app) {
+  constructor() {
     super();
-    this.app = app;
     this.mainWindow = null;
     this.settings = null;
     this.ircClient = null;
@@ -36,7 +35,9 @@ class AppMain extends EventEmitter {
     this.initialized = false;
 
     this.status = {
-      trackingChannel: null
+      trackingChannel: null,
+      hostedOverlay: null,
+      overlays: []
     };
     this.updateIRCRooms = this.updateIRCRooms.bind(this);
     this.createWindow = this.createWindow.bind(this);
@@ -47,6 +48,7 @@ class AppMain extends EventEmitter {
     this.ircClient = new IRCClient();
     this.roomTracker = new RoomTrackerWrapper(this.ircClient);
     this.notiTracker = new NotificationsWrapper(this.ircClient);
+    this.overlayManager = new OverlayManager();
     this.notiDB = new Datastore({
       filename: path.join(app.getPath('userData'), 'notifications.db'),
       autoload: true
@@ -57,6 +59,8 @@ class AppMain extends EventEmitter {
     this.createWindow();
 
     this.settings.wrapApp(this);
+
+    this.refreshOverlays();
   
     ipcMain.on(STATUS_GET, (event, args) => {
       event.sender.send(STATUS_GET, this.status);
@@ -101,8 +105,11 @@ class AppMain extends EventEmitter {
         delete data._id;
         data.event = event;
         data.channel = channel;
-        console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`)
-        if (this.mainWindow && this.settings.isFilteredNotification(data)) this.mainWindow.webContents.send(NOTIFICATION_NEW, data);
+        console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`);
+        if (this.settings.isFilteredNotification(data)) {
+          this.overlayManager.submitNotification(data);
+          if (this.mainWindow) this.mainWindow.webContents.send(NOTIFICATION_NEW, data);
+        }
         this.notiDB.insert(data);
       }
     });
@@ -123,6 +130,23 @@ class AppMain extends EventEmitter {
     });
 
     this.initialized = true;
+  }
+
+  refreshOverlays() {
+    this.overlayManager.refreshOverlays(this.getOverlaysPath(), (err) => {
+      if (err) console.log(err);
+      this.status.overlays = [];
+      const newOverlays = this.overlayManager.overlays;
+      for (let i = 0; i < newOverlays.length; i++) {
+        this.status.overlays.push({
+          name: newOverlays[i].getName(),
+          version: newOverlays[i].getVersion(),
+          index: i
+        });
+      }
+      console.log('STATUS UPDATE');
+      if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+    });
   }
 
   // Updates irc room
@@ -148,6 +172,10 @@ class AppMain extends EventEmitter {
       ) : (
         path.join(__dirname, '../build/')
       );
+  }
+
+  getOverlaysPath() {
+    return isDev ? path.join(__dirname, '../overlays') : app.getPath('userData');
   }
   
   // Creates the main window

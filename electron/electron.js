@@ -3,7 +3,7 @@ const { app } = electron;
 
 const AppMain = require('./AppMain');
 
-let main = new AppMain(app);
+let main = new AppMain();
 
 app.on('ready', () => {
   main.init();

@@ -56,6 +56,12 @@ class OverlayManager extends EventEmitter {
     });
   }
 
+  submitNotification(notification) {
+    if (this.overlay !== null) {
+      this.io.emit('notification', notification);
+    }
+  }
+
   // Get all the overlays
   refreshOverlays(overlaysPath, refreshCallback) {
     this.overlays = [];
