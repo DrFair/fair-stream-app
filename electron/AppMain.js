@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const EventEmitter = require('events');
 
+const fs = require('fs');
 const path = require('path');
 const isDev = require('electron-is-dev');
 
@@ -140,6 +141,14 @@ class AppMain extends EventEmitter {
       }
     }
   }
+
+  getPublicPath() {
+    return isDev ? (
+        process.env.ELECTRON_USE_BUILD_FOLDER ? path.join(__dirname, '../build/') : path.join(__dirname, '../public/')
+      ) : (
+        path.join(__dirname, '../build/')
+      );
+  }
   
   // Creates the main window
   createWindow() {
@@ -152,6 +161,7 @@ class AppMain extends EventEmitter {
   
     let size = 580;
     let minSize = 150;
+    const publicPath = this.getPublicPath();
     this.mainWindow = new BrowserWindow({
       width: Math.floor(size * 16 / 9),
       height: size,
@@ -160,11 +170,11 @@ class AppMain extends EventEmitter {
       frame: false,
       webPreferences: {
         nodeIntegration: false,
-        preload: path.join(__dirname, '/preload.js')
+        preload: path.join(__dirname, 'preload.js')
       },
-      icon: path.join(__dirname, '../public/favicon.ico')
+      icon: path.join(publicPath, 'favicon.ico')
     });
-    this.mainWindow.loadURL((!isDev || process.env.ELECTRON_USE_BUILD_FOLDER) ? `file://${path.join(__dirname, '../build/index.html')}` : 'http://localhost:3000');
+    this.mainWindow.loadURL((!isDev || process.env.ELECTRON_USE_BUILD_FOLDER) ? `file://${path.join(publicPath, 'index.html')}` : 'http://localhost:3000');
     this.mainWindow.on('closed', () => this.mainWindow = null);
   }
 }
