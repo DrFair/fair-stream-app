@@ -8,5 +8,6 @@ module.exports = {
   NOTIFICATION_DUMMY: 'notification-dummy',
   NOTIFICATION_DELETE: 'notification-delete',
   NOTIFICATON_HIDE: 'notification-hide',
-  NOTIFICATON_UNHIDE: 'notification-unhide'
+  NOTIFICATON_UNHIDE: 'notification-unhide',
+  OVERLAY_SET: 'overlay-set', // Set overlay index
 };

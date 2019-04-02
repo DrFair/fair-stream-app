@@ -20,7 +20,8 @@ const {
   NOTIFICATION_DUMMY,
   NOTIFICATION_DELETE,
   NOTIFICATON_HIDE,
-  NOTIFICATON_UNHIDE
+  NOTIFICATON_UNHIDE,
+  OVERLAY_SET
 } = require('./ipcEvents');
 
 class AppMain extends EventEmitter {
@@ -37,6 +38,7 @@ class AppMain extends EventEmitter {
     this.status = {
       trackingChannel: null,
       hostedOverlay: null,
+      overlayError: null,
       overlays: []
     };
     this.updateIRCRooms = this.updateIRCRooms.bind(this);
@@ -98,6 +100,43 @@ class AppMain extends EventEmitter {
         }
       });
     });
+
+    ipcMain.on(OVERLAY_SET, (event, index) => {
+      index = Number(index);
+      if (isNaN(index)) return;
+      const { overlays } = this.overlayManager;
+      if (index < 0 && this.overlayManager.overlay) {
+        this.overlayManager.stop(() => {
+          this.status.hostedOverlay = null;
+          this.status.overlayError = null;
+          if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+        });
+      } else if (index < overlays.length) {
+        this.overlayManager.start(3000, overlays[index], (err) => {
+          if (!err) {
+            const newOverlay = this.overlayManager.overlay;
+            if (newOverlay) {
+              this.status.hostedOverlay = {
+                name: newOverlay.info.name,
+                version: newOverlay.info.version,
+                index: index
+              };
+            } else {
+              this.status.hostedOverlay = null;
+            }
+          } else {
+            console.log(err);
+            this.status.hostedOverlay = null;
+          }
+          if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+        });
+      }
+    })
+
+    this.overlayManager.on('iport', () => {
+      this.status.overlayError = 'Invalid overlay port chosen';
+      if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+    });
   
     this.notiTracker.on('any', (event, channel, data) => {
       if (channel === this.settings.get().channel || channel === 'dummychannel') {
@@ -144,7 +183,6 @@ class AppMain extends EventEmitter {
           index: i
         });
       }
-      console.log('STATUS UPDATE');
       if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
     });
   }

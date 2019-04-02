@@ -3,6 +3,7 @@ import './SettingsTab.css';
 import ChannelSettings from './ChannelSettings';
 import FilterSettings from './FilterSettings';
 import { Button } from 'react-bootstrap';
+import OverlaySettings from './OverlaySettings';
 
 const { ipcRenderer } = window.electron;
 const { NOTIFICATION_DUMMY } = window.ipcEvents;
@@ -27,6 +28,8 @@ export class Settings extends Component {
         <Button variant="secondary" size="sm" className="m-1" onClick={() => this.sendDummyNotification('giftsub')}>Giftsub</Button>
         <Button variant="secondary" size="sm" className="m-1" onClick={() => this.sendDummyNotification('massgiftsub')}>Massgiftsub</Button>
         <Button variant="secondary" size="sm" className="m-1" onClick={() => this.sendDummyNotification('bits')}>Bits</Button>
+        <h4 className="mt-2">Overlay settings</h4>
+        <OverlaySettings {...this.props} />
       </div>
     )
   }
