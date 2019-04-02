@@ -1,9 +1,7 @@
-$(function() {
-  onNotification(function(data) {
-    console.log(data);
-    $('body').append(data.systemMsg ? data.systemMsg : data.msg);
-  });
-  onSettings(function(data) {
-    console.log(data);
-  });
-})
+onNotification(function(data) {
+  console.log(data);
+  document.body.innerHTML += `<p>${data.systemMsg ? data.systemMsg : data.msg}</p>`;
+});
+onSettings(function(data) {
+  console.log(data);
+});

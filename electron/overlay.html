@@ -22,7 +22,6 @@
         iframe.style.border = 'none';
         document.body.appendChild(iframe);
         var iframeElement = document.getElementById('overlayiframe');
-        iframeElement.contentWindow.$ = $; // Give jquery access
 
         var socket = io();
         var notificationListeners = [];
