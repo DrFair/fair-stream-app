@@ -7,6 +7,7 @@ class Settings {
     // Default settings:
     this.default = {
       channel: null,
+      hostPort: 3000,
       notificationFilters: {
         showHidden: false,
         showBits: true,

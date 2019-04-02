@@ -8,15 +8,18 @@ class OverlaySettings extends Component {
   constructor(props) {
     super(props)
 
+    this.hostPort = React.createRef();
     this.overlaySelect = React.createRef();
   }
   
 
   render() {
-    const { status } = this.props;
+    const { status, settings } = this.props;
     return (
       <div>
         <Form.Group>
+          <Form.Label>Overlay host port</Form.Label>
+          <Form.Control as="input" type="number" size="sm" style={{ maxWidth: 400 }} defaultValue={settings ? settings.hostPort : 3000} ref={this.hostPort} />
           <Form.Label>Select overlay</Form.Label>
           <Form.Control as="select" ref={this.overlaySelect} size="sm" style={{ maxWidth: 400 }}>
             <option value={-1}>No overlay</option>
@@ -25,7 +28,10 @@ class OverlaySettings extends Component {
             ))}
           </Form.Control>
           { status !== null && status.hostedOverlay !== null ? (
-            <p className="settings-note good">Currently hosting overlay {status.hostedOverlay.name} v{status.hostedOverlay.version}</p>
+            <>
+              <p className="settings-note good">Currently hosting {status.hostedOverlay.name} v{status.hostedOverlay.version} on port {status.hostedOverlay.port}</p>
+              <p className="settings-note good">To use it, create a browser source on OBS with URL: localhost:{status.hostedOverlay.port}</p>
+            </>
           ) : (
             <p className="settings-note bad">Not currently hosting any overlay</p>
           ) }
@@ -36,8 +42,9 @@ class OverlaySettings extends Component {
         <Button
           variant="primary"
           onClick={() => {
-            let { value } = this.overlaySelect.current;
-            ipcRenderer.send(OVERLAY_SET, value);
+            let index = this.overlaySelect.current.value;
+            let hostPort = this.hostPort.current.value;
+            ipcRenderer.send(OVERLAY_SET, index, hostPort);
           }}
         >
           Apply

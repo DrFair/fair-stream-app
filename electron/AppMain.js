@@ -101,9 +101,20 @@ class AppMain extends EventEmitter {
       });
     });
 
-    ipcMain.on(OVERLAY_SET, (event, index) => {
+    ipcMain.on(OVERLAY_SET, (event, index, port) => {
       index = Number(index);
       if (isNaN(index)) return;
+      port = Number(port);
+      if (isNaN(port)) return;
+      this.status.overlayError = null;
+      if (port < 0 || port > 65535) {
+        this.status.overlayError = 'Invalid host port';
+        if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+        return;
+      }
+      this.settings.set({
+        hostPort: port
+      });
       const { overlays } = this.overlayManager;
       if (index < 0 && this.overlayManager.overlay) {
         this.overlayManager.stop(() => {
@@ -112,14 +123,15 @@ class AppMain extends EventEmitter {
           if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
         });
       } else if (index < overlays.length) {
-        this.overlayManager.start(3000, overlays[index], (err) => {
+        this.overlayManager.start(port, overlays[index], (err) => {
           if (!err) {
             const newOverlay = this.overlayManager.overlay;
             if (newOverlay) {
               this.status.hostedOverlay = {
                 name: newOverlay.info.name,
                 version: newOverlay.info.version,
-                index: index
+                index: index,
+                port: port
               };
             } else {
               this.status.hostedOverlay = null;
