@@ -1,0 +1,17 @@
+{
+  "name": "Example overlay",
+  "description": "An example overlay",
+  "version": "0.1.0",
+  "author": "Mads Skovgaard",
+  "settings": {
+    "size": {
+      "type": "number",
+      "defaultValue": 1
+    }
+  },
+  "actions": {
+    "example-action": {
+      "content": "Hello from example action!"
+    }
+  }
+}
