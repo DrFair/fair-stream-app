@@ -21,6 +21,7 @@ class OverlayManager extends EventEmitter {
     this.app = express();
     this.server = http.Server(this.app);
     this.io = SocketIO(this.server);
+    this.sockets = []; // Array of SocketHandler's
     this.overlays = [];
     this.overlay = null;
 
@@ -41,9 +42,22 @@ class OverlayManager extends EventEmitter {
     });
     
     this.io.on('connection', (socket) => {
-      console.log('Client connected!');
+      // Add a new handler to sockets
+      const handler = new SocketHandler(socket);
+      const index = this.getSocketIndex(socket.id);
+      if (index !== -1) this.sockets.splice(index, 1);
+      this.sockets.push(handler);
+      console.log('Client connected!', socket.id, index);
+
+      socket.on('settings', () => {
+        // TODO: Send settings back
+        socket.emit('settings', {});
+      });
+
       socket.on('disconnect', () => {
-        console.log('Client disconnected!');
+        const index = this.getSocketIndex(socket.id);
+        if (index !== -1) this.sockets.splice(index, 1);
+        console.log('Client disconnected!', socket.id, index);
       });
     });
 
@@ -58,7 +72,9 @@ class OverlayManager extends EventEmitter {
 
   submitNotification(notification) {
     if (this.overlay !== null) {
-      this.io.emit('notification', notification);
+      this.sockets.forEach((handler) => {
+        handler.submitNotification(notification);
+      });
     }
   }
 
@@ -127,10 +143,44 @@ class OverlayManager extends EventEmitter {
   stop(callback) {
     this.server.close((err) => {
       this.overlay = null;
+      this.sockets = [];
       if (callback) callback(err);
     });
   }
 
+  getSocketIndex(id) {
+    for (let i = 0; i < this.sockets.length; i++) {
+      if (this.sockets[i].id === id) return i;
+    }
+    return -1;
+  }
+
+}
+
+class SocketHandler {
+  constructor(socket) {
+    this.socket = socket;
+    this.id = socket.id;
+    this.readyForNotification = false;
+    this.notificationQueue = [];
+    socket.on('requestnext', () => {
+      this.readyForNotification = true;
+      this.sendNextIfReady();
+    });
+  }
+
+  submitNotification(notification) {
+    this.notificationQueue.push(notification);
+    this.sendNextIfReady();
+  }
+
+  sendNextIfReady() {
+    if (this.readyForNotification && this.notificationQueue.length > 0) {
+      const notification = this.notificationQueue.splice(0, 1)[0];
+      this.socket.emit('notification', notification);
+      this.readyForNotification = false;
+    }
+  }
 }
 
 module.exports = OverlayManager;
