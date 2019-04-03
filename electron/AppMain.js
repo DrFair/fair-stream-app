@@ -155,7 +155,7 @@ class AppMain extends EventEmitter {
     this.notiTracker.on('any', (event, channel, data) => {
       if (channel === this.settings.get().channel || channel === 'dummychannel') {
         data._id = data.id;
-        delete data._id;
+        delete data.id;
         data.event = event;
         data.channel = channel;
         console.log(`NOTICE: ${event} ${data.systemMsg ? data.systemMsg : data.msg}`);
