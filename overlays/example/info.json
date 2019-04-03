@@ -4,14 +4,27 @@
   "version": "0.1.0",
   "author": "Mads Skovgaard",
   "settings": {
-    "size": {
+    "textSize": {
+      "name": "Text size",
+      "note": "Size in pixels",
       "type": "number",
-      "defaultValue": 1
-    }
-  },
-  "actions": {
-    "example-action": {
-      "content": "Hello from example action!"
+      "defaultValue": 30
+    },
+    "textPosition": {
+      "name": "Text position",
+      "note": "Number of pixels from the top",
+      "type": "number",
+      "defaultValue": 100
+    },
+    "textAlign": {
+      "name": "Text alignment",
+      "type": "select",
+      "options": [
+        "Center",
+        "Left",
+        "Right"
+      ],
+      "defaultValue": "Center"
     }
   }
 }
