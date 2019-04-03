@@ -1,124 +1,21 @@
 import React, { Component } from 'react'
 import './NotificationsTab.css';
-import IPCWrapper from '../lib/IPCWrapper';
 import { Button, OverlayTrigger, Popover, InputGroup, FormControl } from 'react-bootstrap';
 import FilterSettings from './FilterSettings';
 import Notification from './Notification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faFilter, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const {
-  NOTIFICATION_NEW,
-  NOTIFICATION_HISTORY,
-  NOTIFICATION_DELETE,
-  NOTIFICATON_HIDE,
-  NOTIFICATON_UNHIDE
-} = window.ipcEvents;
-
 class NotificationsTab extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      list: [],
-      loading: false
-    };
     this.filterSettingsOverlay = React.createRef();
-
-    this.updateFromHistory = this.updateFromHistory.bind(this);
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.settings !== prevProps.settings) {
-      this.updateFromHistory();
-    }
-  }
-
-  updateFromHistory() {
-    this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
-      console.log('GOT', data);
-      this.setState({
-        list: data,
-        loading: false
-      });
-    });
-
-    this.ipcWrapper.send(NOTIFICATION_HISTORY, 100);
-    this.setState({
-      loading: true
-    });
-  }
-
-  deleteNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.state.list.map(e => e);
-      list.splice(index, 1);
-      this.setState({
-        list: list
-      });
-    }
-    this.ipcWrapper.send(NOTIFICATION_DELETE, id);
-  }
-
-  hideNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.state.list.map(e => e);
-      const { settings } = this.props;
-      const filters = settings ? settings.notificationFilters : undefined;
-      if (filters.showHidden) {
-        list[index].hidden = true;
-      } else {
-        list.splice(index, 1);
-      }
-      this.setState({
-        list: list
-      });
-    }
-    this.ipcWrapper.send(NOTIFICATON_HIDE, id);
-  }
-
-  unhideNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.state.list.map(e => e);
-      list[index].hidden = undefined;
-      this.setState({
-        list: list
-      });
-    }
-    this.ipcWrapper.send(NOTIFICATON_UNHIDE, id);
-  }
-
-  getNotificationIndex(id) {
-    const { list } = this.state;
-    for (let i = 0; i < list.length; i++) {
-      if (list[i]._id === id) return i;
-    }
-    return -1;
-  }
-
-  componentDidMount() {
-    this.ipcWrapper = new IPCWrapper();
-    this.updateFromHistory();
-
-    this.ipcWrapper.on(NOTIFICATION_NEW, (event, data) => {
-      console.log("Got notification", data);
-      let list = this.state.list.map((e) => e); // Need to make a copy of list
-      list.unshift(data);
-      if (list.length > 100) list.splice(100, list.length - 100);
-      this.setState({
-        list: list
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.ipcWrapper.dispose();
   }
 
   render() {
-    const { list, loading } = this.state;
+    const { notifications } = this.props;
+    if (!notifications) return null;
+    const { list, loading } = notifications;
     return (
       <div className="mx-4 mt-1 mb-4">
         <div className="d-flex flex-row mb-2" style={{ whiteSpace: 'nowrap' }}>

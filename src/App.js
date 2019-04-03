@@ -2,23 +2,32 @@ import React, { Component } from 'react';
 import './App.css';
 import Titlebar from './components/Titlebar';
 import NavBar from './components/Navbar';
-import Settings from './components/SettingsTab';
+import SettingsTab from './components/SettingsTab';
 import NotificationsTab from './components/NotificationsTab';
 import IPCWrapper from './lib/IPCWrapper';
+import NotificationsHandler from './lib/NotificationsHandler';
 
-const { SETTINGS_GET, SETTINGS_SET, STATUS_GET } = window.ipcEvents;
+const {
+  SETTINGS_GET,
+  SETTINGS_SET,
+  STATUS_GET
+} = window.ipcEvents;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.routes = {
       'notifications': NotificationsTab,
-      'settings': Settings
+      'settings': SettingsTab
     };
     this.state = {
       route: 'notifications',
       settings: null,
-      status: null
+      status: null,
+      notifications: {
+        list: [],
+        loading: false
+      }
     };
 
     this.setRoute = this.setRoute.bind(this);
@@ -37,9 +46,15 @@ class App extends Component {
 
   componentDidMount() {
     this.ipcWrapper = new IPCWrapper();
+    this.notifications = new NotificationsHandler(this, this.ipcWrapper);
     this.ipcWrapper.on(SETTINGS_GET, (event, data) => {
+      const prevState = this.state;
       this.setState({
         settings: data
+      }, () => {
+        if (prevState.settings !== this.state.settings) {
+          this.notifications.updateFromHistory();
+        }
       });
     });
 
@@ -59,14 +74,16 @@ class App extends Component {
   }
 
   render() {
-    const { route, settings, status } = this.state;
+    const { route, settings, status, notifications } = this.state;
     const RouteComp = this.routes[route] || null;
     const childProps = {
       route: route,
       setRoute: this.setRoute,
       setSettings: this.setSettings,
       settings: settings,
-      status: status
+      status: status,
+      notifications: notifications,
+      NotificationsHandler: this.NotificationsHandler
     };
     return (
       <div className="d-flex flex-column h-100">
