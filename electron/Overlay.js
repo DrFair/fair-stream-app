@@ -1,4 +1,5 @@
 const fs = require('fs');
+const jsonfile = require('jsonfile');
 const path = require('path');
 const async = require('async');
 
@@ -6,6 +7,7 @@ class Overlay {
   constructor(folderPath) {
     this.folderPath = folderPath;
     this.info = {};
+    this.settings = {};
   }
 
   getName() {
@@ -74,6 +76,9 @@ class Overlay {
         fs.exists(path.join(this.folderPath, 'index.html'), (exists) => {
           callback(exists ? undefined : 'Missing index.html file');
         });
+      },
+      (callback) => {
+        this.loadSettings(callback);
       }
     ];
     async.series(validChecks, (err) => {
@@ -81,6 +86,45 @@ class Overlay {
       this.validError = err;
       validCallback(err);
     });
+  }
+
+  // Loads settings or creates a default settings.json file
+  loadSettings(callback) {
+    if (this.info.settings) {
+      for (const key in this.info.settings) {
+        if (this.info.settings[key].defaultValue !== undefined) {
+          this.settings[key] = this.info.settings[key].defaultValue;
+        }
+      }
+      if (fs.exists(this.getSettingsPath(), (exists) => {
+        if (exists) {
+          jsonfile.readFile(this.getSettingsPath(), (err, obj) => {
+            if (err) {
+              console.log('Error reading overlay settings:', err);
+              return callback();
+            }
+            for (const key in obj) {
+              if (this.settings[key] !== undefined) {
+                this.settings[key] = obj[key];
+              }
+            }
+            callback();
+          });
+        } else {
+          this.saveSettings(callback);
+        }
+      }));
+    } else {
+      this.saveSettings(callback);
+    }
+  }
+
+  getSettingsPath() {
+    return path.join(this.folderPath, 'settings.json');
+  }
+
+  saveSettings(callback) {
+    jsonfile.writeFile(this.getSettingsPath(), this.settings, callback);
   }
   
   getFolderPath() {

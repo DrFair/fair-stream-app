@@ -51,7 +51,11 @@ class OverlayManager extends EventEmitter {
 
       socket.on('settings', () => {
         // TODO: Send settings back
-        socket.emit('settings', {});
+        if (this.overlay) {
+          socket.emit('settings', this.overlay.settings);
+        } else {
+          socket.emit('settings', {});
+        }
       });
 
       socket.on('disconnect', () => {
