@@ -83,7 +83,7 @@ class App extends Component {
       settings: settings,
       status: status,
       notifications: notifications,
-      NotificationsHandler: this.NotificationsHandler
+      notificationsHandler: this.notifications
     };
     return (
       <div className="d-flex flex-column h-100">

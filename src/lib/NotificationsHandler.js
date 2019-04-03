@@ -29,7 +29,10 @@ class NotificationsHandler {
       list.unshift(data);
       if (list.length > this.maxLength) list.splice(this.maxLength, list.length - this.maxLength);
       this.component.setState({
-        list: list
+        notifications: {
+          list: list,
+          loading: this.component.state.notifications.loading
+        }
       });
     });
   }
@@ -73,11 +76,10 @@ class NotificationsHandler {
     const index = this.getNotificationIndex(id);
     if (index !== -1) {
       const list = this.component.state.notifications.list.map(e => e);
-      const { settings } = this.component.props || this.component.state;
+      const settings = this.component.state.settings || this.component.props.settings;
       const filters = settings ? settings.notificationFilters : undefined;
-      if (filters.showHidden) {
-        list[index].hidden = true;
-      } else {
+      list[index].hidden = true;
+      if (!filters.showHidden) {
         list.splice(index, 1);
       }
       this.component.setState({

@@ -13,7 +13,7 @@ class NotificationsTab extends Component {
   }
 
   render() {
-    const { notifications } = this.props;
+    const { notifications, notificationsHandler } = this.props;
     if (!notifications) return null;
     const { list, loading } = notifications;
     return (
@@ -59,9 +59,9 @@ class NotificationsTab extends Component {
           <div key={e._id}>
             <Notification
               item={e}
-              remove={() => this.deleteNotification(e._id)}
-              hide={() => this.hideNotification(e._id)}
-              unhide={() => this.unhideNotification(e._id)}
+              remove={() => notificationsHandler.deleteNotification(e._id)}
+              hide={() => notificationsHandler.hideNotification(e._id)}
+              unhide={() => notificationsHandler.unhideNotification(e._id)}
             />
           </div>
         ))}
