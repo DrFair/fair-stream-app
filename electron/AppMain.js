@@ -62,7 +62,19 @@ class AppMain extends EventEmitter {
 
     this.settings.wrapApp(this);
 
-    this.refreshOverlays();
+    this.refreshOverlays(() => {
+      const overlaySetting = this.settings.get().overlay;
+      const { overlays } = this.overlayManager;
+      if (overlaySetting !== null) {
+        for (let i = 0; i < overlays.length; i++) {
+          const key = overlays[i].getName() + 'v' + overlays[i].getVersion();
+          if (overlaySetting === key) {
+            this.startOverlay(i, this.settings.get().hostPort);
+            break;
+          }
+        }
+      }
+    });
   
     ipcMain.on(STATUS_GET, (event, args) => {
       event.sender.send(STATUS_GET, this.status);
@@ -116,32 +128,22 @@ class AppMain extends EventEmitter {
         hostPort: port
       });
       const { overlays } = this.overlayManager;
+      console.log(index, port);
       if (index < 0 && this.overlayManager.overlay) {
-        this.overlayManager.stop(() => {
+        this.overlayManager.stop((err) => {
+          if (err) console.log(err);
           this.status.hostedOverlay = null;
           this.status.overlayError = null;
           if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
         });
-      } else if (index < overlays.length) {
-        this.overlayManager.start(port, overlays[index], (err) => {
-          if (!err) {
-            const newOverlay = this.overlayManager.overlay;
-            if (newOverlay) {
-              this.status.hostedOverlay = {
-                name: newOverlay.info.name,
-                version: newOverlay.info.version,
-                index: index,
-                port: port
-              };
-            } else {
-              this.status.hostedOverlay = null;
-            }
-          } else {
-            console.log(err);
-            this.status.hostedOverlay = null;
-          }
-          if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+        this.settings.set({
+          overlay: null
         });
+      } else if (index < overlays.length) {
+        this.settings.set({
+          overlay: overlays[index].getName() + 'v' + overlays[index].getVersion()
+        });
+        this.startOverlay(index, port);
       }
     })
 
@@ -183,7 +185,30 @@ class AppMain extends EventEmitter {
     this.initialized = true;
   }
 
-  refreshOverlays() {
+  startOverlay(index, port) {
+    const { overlays } = this.overlayManager;
+    this.overlayManager.start(port, overlays[index], (err) => {
+      if (!err) {
+        const newOverlay = this.overlayManager.overlay;
+        if (newOverlay) {
+          this.status.hostedOverlay = {
+            name: newOverlay.info.name,
+            version: newOverlay.info.version,
+            index: index,
+            port: port
+          };
+        } else {
+          this.status.hostedOverlay = null;
+        }
+      } else {
+        console.log(err);
+        this.status.hostedOverlay = null;
+      }
+      if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+    });
+  }
+
+  refreshOverlays(callback) {
     this.overlayManager.refreshOverlays(this.getOverlaysPath(), (err) => {
       if (err) console.log(err);
       this.status.overlays = [];
@@ -196,6 +221,7 @@ class AppMain extends EventEmitter {
         });
       }
       if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
+      if (callback) callback();
     });
   }
 
