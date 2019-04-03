@@ -115,7 +115,7 @@ class OverlayManager extends EventEmitter {
         overlayCallbacks.push((callback) => {
           overlay.isValid((err) => {
             if (!err) {
-              console.log('Found overlay:', overlay.folderPath, overlay.info);
+              // console.log('Found overlay:', overlay.folderPath, overlay.info);
               this.overlays.push(overlay);
             } else {
               console.log('Overlay error:', err);
