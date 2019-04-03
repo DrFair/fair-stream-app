@@ -141,6 +141,9 @@ class OverlayManager extends EventEmitter {
   }
 
   stop(callback) {
+    for (let i = 0; i < this.sockets.length; i++) {
+      this.sockets[i].socket.disconnect(true);
+    }
     this.server.close((err) => {
       this.overlay = null;
       this.sockets = [];
