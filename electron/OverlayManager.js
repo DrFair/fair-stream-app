@@ -131,6 +131,10 @@ class OverlayManager extends EventEmitter {
   }
 
   start(port, overlay, callback) {
+    if (this.overlay === overlay) {
+      if (callback) callback();
+      return;
+    }
     this.port = port;
     this.stop(() => {
       this.server.listen(port, (err) => {
