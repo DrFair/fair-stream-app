@@ -12,7 +12,6 @@ class FilterSettings extends Component {
   }
 
   handleChange(name, value) {
-    console.log(name, value);
     let newSettings = {};
     newSettings[name] = value;
     newSettings = Object.assign(this.state.settings, newSettings);
