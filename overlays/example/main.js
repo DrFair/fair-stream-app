@@ -1,8 +1,13 @@
 (function() {
+  var settings = null;
+  requestSettings();
 
-  getSettings(function(settings) {
+  onSettings(function(newSettings) {
+    if (settings === null) {
+      overlayReady();
+    }
+    settings = newSettings;
     console.log(settings);
-    overlayReady();
   });
 
   onNotification(function(data) {

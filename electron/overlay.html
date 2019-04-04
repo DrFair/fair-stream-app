@@ -32,10 +32,12 @@
           socket.emit('requestnext');
           ready = true;
         };
-        iframeElement.contentWindow.getSettings = function(callback) {
-          socket.once('settings', (data) => {
+        iframeElement.contentWindow.onSettings = function(callback) {
+          socket.on('settings', (data) => {
             callback(data);
           });
+        }
+        iframeElement.contentWindow.requestSettings = function() {
           socket.emit('settings');
         };
         iframeElement.contentWindow.onNotification = function(callback) {
