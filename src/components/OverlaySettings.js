@@ -22,10 +22,10 @@ class OverlaySettings extends Component {
           <Form.Label>Overlay host port</Form.Label>
           <Form.Control as="input" type="number" size="sm" style={{ maxWidth: 400 }} defaultValue={settings ? settings.hostPort : 3000} ref={this.hostPort} />
           <Form.Label>Select overlay</Form.Label>
-          <Form.Control as="select" ref={this.overlaySelect} size="sm" style={{ maxWidth: 400 }}>
-            <option value={-1} selected={hostedOverlay === null}>No overlay</option>
+          <Form.Control as="select" ref={this.overlaySelect} size="sm" defaultValue={hostedOverlay === null ? -1 : hostedOverlay.index} style={{ maxWidth: 400 }}>
+            <option value={-1}>No overlay</option>
             {status.overlays.map((e) => (
-              <option key={e.name + e.version + e.index} value={e.index} selected={hostedOverlay !== null && hostedOverlay.index === e.index}>{e.name} v{e.version}</option>
+              <option key={e.name + e.version + e.index} value={e.index}>{e.name} v{e.version}</option>
             ))}
           </Form.Control>
           { status !== null && status.hostedOverlay !== null ? (
