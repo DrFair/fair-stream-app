@@ -7,6 +7,7 @@
       overlayReady();
     }
     settings = newSettings;
+    setNotificationContent('Your notifications will appear here');
     console.log(settings);
   });
 
@@ -43,13 +44,18 @@
         break;
       }
     }
-    document.getElementById('notifications').innerHTML = content;
+    setNotificationContent(content);
     setTimeout(function() {
       // Clear notifications
-      document.getElementById('notifications').innerHTML = '';
+      setNotificationContent('');
       console.log('Ready next!');
       data.requestNext();
     }, 5000);
   });
+
+  function setNotificationContent(content) {
+    var style = `text-align:${settings.textAlign.toLowerCase()}; font-size:${settings.textSize}px; margin-top:${settings.textPosition}px;`;
+    document.getElementById('notifications').innerHTML = `<div class="notification" style="${style}">${content}</div>`;
+  }
 
 })();
