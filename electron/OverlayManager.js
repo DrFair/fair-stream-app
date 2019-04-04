@@ -74,6 +74,18 @@ class OverlayManager extends EventEmitter {
     });
   }
 
+  submitSettings(settings) {
+    if (this.overlay !== null) {
+      for (const key in settings) {
+        if (this.overlay.settings.hasOwnProperty(key)) {
+          this.overlay.settings[key] = settings[key];
+        }
+      }
+      this.io.emit('settings', this.overlay.settings);
+      this.overlay.saveSettings();
+    }
+  }
+
   submitNotification(notification) {
     if (this.overlay !== null) {
       this.sockets.forEach((handler) => {

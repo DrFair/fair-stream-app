@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Button } from 'react-bootstrap';
+import HostedOverlaySettings from './HostedOverlaySettings';
 
 const { ipcRenderer } = window.electron;
 const { OVERLAY_SET } = window.ipcEvents;
@@ -14,7 +15,7 @@ class OverlaySettings extends Component {
   
   render() {
     const { status, settings } = this.props;
-    const { hostedOverlay } = status;
+    const hostedOverlay = status ? status.hostedOverlay : null;
     return (
       <div>
         <Form.Group>
@@ -49,6 +50,12 @@ class OverlaySettings extends Component {
         >
           Apply
         </Button>
+        { hostedOverlay !== null && hostedOverlay.settings ? (
+          <>
+            <h5 className="mt-2">{hostedOverlay.name} settings</h5>
+            <HostedOverlaySettings {...this.props} />
+          </>
+        ) : null}
       </div>
     )
   }

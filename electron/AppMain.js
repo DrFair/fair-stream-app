@@ -21,7 +21,8 @@ const {
   NOTIFICATION_DELETE,
   NOTIFICATON_HIDE,
   NOTIFICATON_UNHIDE,
-  OVERLAY_SET
+  OVERLAY_SET,
+  OVERLAY_SETTINGS
 } = require('./ipcEvents');
 
 class AppMain extends EventEmitter {
@@ -147,6 +148,10 @@ class AppMain extends EventEmitter {
       }
     })
 
+    ipcMain.on(OVERLAY_SETTINGS, (event, settings) => {
+      this.overlayManager.submitSettings(settings);
+    });
+
     this.overlayManager.on('iport', () => {
       this.status.overlayError = 'Invalid overlay port chosen';
       if (this.mainWindow) this.mainWindow.webContents.send(STATUS_GET, this.status);
@@ -190,10 +195,16 @@ class AppMain extends EventEmitter {
     this.overlayManager.start(port, overlays[index], (err) => {
       if (!err) {
         const newOverlay = this.overlayManager.overlay;
+        const settings = {};
+        for (const key in newOverlay.settings) {
+          settings[key] = newOverlay.info.settings[key];
+          settings[key].value = newOverlay.settings[key];
+        }
         if (newOverlay) {
           this.status.hostedOverlay = {
-            name: newOverlay.info.name,
-            version: newOverlay.info.version,
+            name: newOverlay.getName(),
+            version: newOverlay.getVersion(),
+            settings: settings,
             index: index,
             port: port
           };

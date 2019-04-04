@@ -10,4 +10,5 @@ module.exports = {
   NOTIFICATON_HIDE: 'notification-hide',
   NOTIFICATON_UNHIDE: 'notification-unhide',
   OVERLAY_SET: 'overlay-set', // Set overlay index and port
+  OVERLAY_SETTINGS: 'overlay-settings', // Set overlay settings
 };
