@@ -8,6 +8,7 @@ class HostedOverlaySettings extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      settings: {}
     };
   }
 
@@ -20,7 +21,9 @@ class HostedOverlaySettings extends Component {
           <Form.Control as="select" size="sm" style={{ maxWidth: 400 }} defaultValue={setting.value} onChange={(e) => {
             const newState = {};
             newState[key] = e.target.value;
-            this.setState(newState);
+            this.setState({
+              settings: Object.assign(this.state.settings, newState)
+            });
           }}>
             {options.map((e) => (
               <option key={e} value={e}>
@@ -34,7 +37,9 @@ class HostedOverlaySettings extends Component {
         return <Form.Control as="input" type={type} size="sm" defaultValue={setting.value} style={{ maxWidth: 400 }} onChange={(e) => {
           const newState = {};
           newState[key] = e.target.value;
-          this.setState(newState);
+          this.setState({
+            settings: Object.assign(this.state.settings, newState)
+          });
         }}/>
       }
     }
@@ -63,9 +68,13 @@ class HostedOverlaySettings extends Component {
         <Button
           variant="primary"
           onClick={() => {
-            console.log(this.state);
-            ipcRenderer.send(OVERLAY_SETTINGS, this.state);
+            console.log(this.state.settings);
+            ipcRenderer.send(OVERLAY_SETTINGS, this.state.settings);
+            this.setState({
+              settings: {}
+            });
           }}
+          disabled={Object.keys(this.state.settings).length === 0}
         >
           Apply
         </Button>
