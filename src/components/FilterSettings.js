@@ -5,116 +5,74 @@ class FilterSettings extends Component {
     super(props);
 
     this.state = {
-      canApply: false
+      settings: {}
     };
 
-    this.showHidden = React.createRef();
-    this.showBits = React.createRef();
-    this.minBits = React.createRef();
-    this.showNewsubs = React.createRef();
-    this.showResubs = React.createRef();
-    this.showGiftsubs = React.createRef();
-    this.showMassGiftsubs = React.createRef();
-    this.updateApply = this.updateApply.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  updateApply() {
+  handleChange(name, value) {
+    console.log(name, value);
+    let newSettings = {};
+    newSettings[name] = value;
+    newSettings = Object.assign(this.state.settings, newSettings);
+
     const { settings } = this.props;
     const filters = settings ? settings.notificationFilters : undefined;
-    const showHiddenValue = this.showHidden.current.checked;
-    const showBitsValue = this.showBits.current.checked;
-    const minBitsValue = Number(this.minBits.current.value);
-    const showNewsubsValue = this.showNewsubs.current.checked;
-    const showResubsValue = this.showResubs.current.checked;
-    const showGiftsubsValue = this.showGiftsubs.current.checked;
-    const showMassGiftsubsValue = this.showMassGiftsubs.current.checked;
+    if (filters && filters[name] === newSettings[name]) {
+      delete newSettings[name];
+    }
     this.setState({
-      canApply: canApply()
+      settings: newSettings
     });
-
-
-    function canApply() {
-      if (!filters) return false;
-      if (showHiddenValue !== filters.showHidden) return true;
-      if (showBitsValue !== filters.showBits) return true;
-      if (minBitsValue !== filters.minBits) return true;
-      if (showNewsubsValue !== filters.showNewsubs) return true;
-      if (showResubsValue !== filters.showResubs) return true;
-      if (showGiftsubsValue !== filters.showGiftsubs) return true;
-      if (showMassGiftsubsValue !== filters.showMassGiftsubs) return true;
-      return false;
-    }
-  }
-
-  componentDidMount() {
-    this.updateApply();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.settings !== prevProps.settings) {
-      this.updateApply();
-    }
   }
 
   render() {
     const { settings, setSettings, onApply, smallApply } = this.props;
     const filters = settings ? settings.notificationFilters : undefined;
-    const { canApply } = this.state;
     return (
       <>
         <div className="form-group">
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showHidden : true} ref={this.showHidden} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showHidden : true} ref={this.showHidden} onChange={(e) => this.handleChange('showHidden', e.target.checked)} />
             <label className="form-check-label">Show hidden</label>
           </div>
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showBits : true} ref={this.showBits} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showBits : true} ref={this.showBits} onChange={(e) => this.handleChange('showBits', e.target.checked)} />
             <label className="form-check-label">Show bits</label>
           </div>
           <label>Minimum bits</label>
-          <input className="form-control form-control-sm mb-1" type="number" style={{ maxWidth: 400 }} defaultValue={filters ? filters.minBits : 0} ref={this.minBits} onChange={this.updateApply} />
+          <input className="form-control form-control-sm mb-1" type="number" style={{ maxWidth: 400 }} defaultValue={filters ? filters.minBits : 0} ref={this.minBits} onChange={(e) => {
+            let value = Number(e.target.value);
+            if (isNaN(value)) value = 0;
+            this.handleChange('minBits', value);
+          }} />
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showNewsubs : true} ref={this.showNewsubs} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showNewsubs : true} ref={this.showNewsubs} onChange={(e) => this.handleChange('showNewsubs', e.target.checked)} />
             <label className="form-check-label">Show new subs</label>
           </div>
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showResubs : true} ref={this.showResubs} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showResubs : true} ref={this.showResubs} onChange={(e) => this.handleChange('showResubs', e.target.checked)} />
             <label className="form-check-label">Show resubs</label>
           </div>
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showGiftsubs : true} ref={this.showGiftsubs} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showGiftsubs : true} ref={this.showGiftsubs} onChange={(e) => this.handleChange('showGiftsubs', e.target.checked)} />
             <label className="form-check-label">Show gift subs</label>
           </div>
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showMassGiftsubs : true} ref={this.showMassGiftsubs} onChange={this.updateApply} />
+            <input className="form-check-input" type="checkbox" defaultChecked={filters ? filters.showMassGiftsubs : true} ref={this.showMassGiftsubs} onChange={(e) => this.handleChange('showMassGiftsubs', e.target.checked)} />
             <label className="form-check-label">Show mass gift subs</label>
           </div>
         </div>
         <button
           className={'btn btn-primary' + (smallApply ? ' btn-sm' : '')}
           onClick={() => {
-            const showHiddenValue = this.showHidden.current.checked;
-            const showBitsValue = this.showBits.current.checked;
-            let minBitsValue = Number(this.minBits.current.value);
-            const showNewsubsValue = this.showNewsubs.current.checked;
-            const showResubsValue = this.showResubs.current.checked;
-            const showGiftsubsValue = this.showGiftsubs.current.checked;
-            const showMassGiftsubsValue = this.showMassGiftsubs.current.checked;
-            if (isNaN(minBitsValue)) minBitsValue = 0;
             setSettings({
-              notificationFilters: {
-                showHidden: showHiddenValue,
-                showBits: showBitsValue,
-                minBits: minBitsValue,
-                showNewsubs: showNewsubsValue,
-                showResubs: showResubsValue,
-                showGiftsubs: showGiftsubsValue,
-                showMassGiftsubs: showMassGiftsubsValue
-              }
+              notificationFilters: this.state.settings
             });
             if (onApply) onApply();
           }}
-          disabled={!canApply}
+          disabled={Object.keys(this.state.settings).length === 0}
         >
           Apply filters
         </button>
