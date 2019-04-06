@@ -22,15 +22,15 @@ class Notification extends Component {
           </OverlayTrigger>
           {item.hidden ? (
             <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-unhide-' + item.id}>Unhide</Tooltip>}>
-              <Button variant="info" size="sm"><FontAwesomeIcon icon={faEye} onClick={unhide} /></Button>
+              <Button variant="info" size="sm" onClick={unhide}><FontAwesomeIcon icon={faEye} /></Button>
             </OverlayTrigger>
           ) : (
             <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-hide-' + item.id}>Hide</Tooltip>}>
-              <Button variant="info" size="sm"><FontAwesomeIcon icon={faEyeSlash} onClick={hide} /></Button>
+              <Button variant="info" size="sm" onClick={hide}><FontAwesomeIcon icon={faEyeSlash} /></Button>
             </OverlayTrigger>
           )}
           <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-delete-' + item.id}>Delete</Tooltip>}>
-            <Button variant="danger" size="sm"><FontAwesomeIcon icon={faTrash} onClick={remove} /></Button>
+            <Button variant="danger" size="sm" onClick={remove}><FontAwesomeIcon icon={faTrash} /></Button>
           </OverlayTrigger>
         </div>
         <div className="notification-title">
