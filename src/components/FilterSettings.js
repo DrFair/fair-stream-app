@@ -69,6 +69,9 @@ class FilterSettings extends Component {
             setSettings({
               notificationFilters: this.state.settings
             });
+            this.setState({
+              settings: {}
+            });
             if (onApply) onApply();
           }}
           disabled={Object.keys(this.state.settings).length === 0}
