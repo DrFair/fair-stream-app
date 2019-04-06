@@ -2,12 +2,47 @@ import React, { Component } from 'react'
 import TimestampAgo from './TimestampAgo';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEye, faEyeSlash, faTrash, faShare, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faTrash, faQuestion, faShare, faHistory } from '@fortawesome/free-solid-svg-icons';
 
 class Notification extends Component {
+  constructor(props) {
+    super(props)
+  
+    this.state = {
+      confirmDelete: false
+    };
+    this.handleDelete = this.handleDelete.bind(this);
+    this.timer = null;
+  }
+
+  componentWillUnmount() {
+    if (this.timer !== null) {
+      clearTimeout(this.timer)
+    }
+  }
+
+  handleDelete() {
+    const { remove } = this.props;
+    const { confirmDelete } = this.state;
+    if (confirmDelete) {
+      remove();
+    } else {
+      this.setState({
+        confirmDelete: true
+      })
+      this.timer = setTimeout(() => {
+        this.setState({
+          confirmDelete: false
+        });
+        this.timer = null;
+      }, 5000);
+    }
+  }
+  
   render() {
     const item = this.props.item;
-    const { remove, hide, unhide } = this.props;
+    const { hide, unhide } = this.props;
+    const { confirmDelete } = this.state;
     return (
       <div className={'notification' + (item.hidden ? ' hidden' : '')}>
         <div className="notification-channel">
@@ -29,8 +64,8 @@ class Notification extends Component {
               <Button variant="info" size="sm" onClick={hide}><FontAwesomeIcon icon={faEyeSlash} /></Button>
             </OverlayTrigger>
           )}
-          <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-delete-' + item.id}>Delete</Tooltip>}>
-            <Button variant="danger" size="sm" onClick={remove}><FontAwesomeIcon icon={faTrash} /></Button>
+          <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-delete-' + item.id}>{confirmDelete ? 'Confirm delete' : 'Delete'}</Tooltip>}>
+            <Button variant="danger" size="sm" onClick={this.handleDelete}><FontAwesomeIcon icon={confirmDelete ? faQuestion : faTrash} /></Button>
           </OverlayTrigger>
         </div>
         <div className="notification-title">
