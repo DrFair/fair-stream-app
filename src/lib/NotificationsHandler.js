@@ -6,8 +6,8 @@ const {
   NOTIFICATION_NEW,
   NOTIFICATION_HISTORY,
   NOTIFICATION_DELETE,
-  NOTIFICATON_HIDE,
-  NOTIFICATON_UNHIDE
+  NOTIFICATION_HIDE,
+  NOTIFICATION_UNHIDE
 } = window.ipcEvents;
 
 class NotificationsHandler {
@@ -89,7 +89,7 @@ class NotificationsHandler {
         }
       });
     }
-    this.ipcWrapper.send(NOTIFICATON_HIDE, id);
+    this.ipcWrapper.send(NOTIFICATION_HIDE, id);
   }
 
   unhideNotification(id) {
@@ -104,7 +104,7 @@ class NotificationsHandler {
         }
       });
     }
-    this.ipcWrapper.send(NOTIFICATON_UNHIDE, id);
+    this.ipcWrapper.send(NOTIFICATION_UNHIDE, id);
   }
 
   getNotificationIndex(id) {

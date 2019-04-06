@@ -7,8 +7,8 @@ module.exports = {
   NOTIFICATION_HISTORY: 'notification-history',
   NOTIFICATION_DUMMY: 'notification-dummy',
   NOTIFICATION_DELETE: 'notification-delete',
-  NOTIFICATON_HIDE: 'notification-hide',
-  NOTIFICATON_UNHIDE: 'notification-unhide',
+  NOTIFICATION_HIDE: 'notification-hide',
+  NOTIFICATION_UNHIDE: 'notification-unhide',
   OVERLAY_SET: 'overlay-set', // Set overlay index and port
   OVERLAY_SETTINGS: 'overlay-settings', // Set overlay settings
 };

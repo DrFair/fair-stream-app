@@ -19,8 +19,8 @@ const {
   NOTIFICATION_NEW,
   NOTIFICATION_DUMMY,
   NOTIFICATION_DELETE,
-  NOTIFICATON_HIDE,
-  NOTIFICATON_UNHIDE,
+  NOTIFICATION_HIDE,
+  NOTIFICATION_UNHIDE,
   OVERLAY_SET,
   OVERLAY_SETTINGS
 } = require('./ipcEvents');
@@ -91,11 +91,11 @@ class AppMain extends EventEmitter {
       this.notiDB.remove({ _id: id });
     });
   
-    ipcMain.on(NOTIFICATON_HIDE, (event, id) => {
+    ipcMain.on(NOTIFICATION_HIDE, (event, id) => {
       this.notiDB.update({ _id: id }, { $set: { hidden: true } });
     });
   
-    ipcMain.on(NOTIFICATON_UNHIDE, (event, id) => {
+    ipcMain.on(NOTIFICATION_UNHIDE, (event, id) => {
       this.notiDB.update({ _id: id }, { $unset: { hidden: true } });
     });
 
