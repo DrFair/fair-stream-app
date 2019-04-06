@@ -92,11 +92,19 @@ class AppMain extends EventEmitter {
     });
   
     ipcMain.on(NOTIFICATION_HIDE, (event, id) => {
-      this.notiDB.update({ _id: id }, { $set: { hidden: true } });
+      if (id === 'all') {
+        this.notiDB.update({}, { $set: { hidden: true } }, { multi: true });
+      } else {
+        this.notiDB.update({ _id: id }, { $set: { hidden: true } });
+      }
     });
   
     ipcMain.on(NOTIFICATION_UNHIDE, (event, id) => {
-      this.notiDB.update({ _id: id }, { $unset: { hidden: true } });
+      if (id === 'all') {
+        this.notiDB.update({}, { $unset: { hidden: true } }, { multi: true });
+      } else {
+        this.notiDB.update({ _id: id }, { $unset: { hidden: true } });
+      }
     });
 
     ipcMain.on(NOTIFICATION_HISTORY, (event, count) => {

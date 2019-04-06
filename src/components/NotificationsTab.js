@@ -6,6 +6,9 @@ import Notification from './Notification';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faFilter, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+const { ipcRenderer } = window.electron;
+const { NOTIFICATION_HIDE } = window.ipcEvents;
+
 class NotificationsTab extends Component {
   constructor(props) {
     super(props)
@@ -43,8 +46,17 @@ class NotificationsTab extends Component {
             </OverlayTrigger>
           </div>
           <div className="p-2">
-            <Button variant="info" size="sm"><FontAwesomeIcon icon={faEyeSlash} /> Hide all</Button>
+            <Button variant="info" size="sm" onClick={() => {
+              ipcRenderer.send(NOTIFICATION_HIDE, 'all');
+              notificationsHandler.updateFromHistory();
+            }}><FontAwesomeIcon icon={faEyeSlash} /> Hide all</Button>
           </div>
+          {/* <div className="p-2">
+            <Button variant="info" size="sm" onClick={() => {
+              ipcRenderer.send(NOTIFICATION_UNHIDE, 'all');
+              notificationsHandler.updateFromHistory();
+            }}><FontAwesomeIcon icon={faEye} /> Unhide all</Button>
+          </div> */}
         </div>
         {loading ? (
           <>
