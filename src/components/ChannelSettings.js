@@ -5,46 +5,38 @@ class ChannelSettings extends Component {
     super(props)
     
     this.state = {
-      canApply: false
+      settings: {}
     };
   
-    this.channelInput = React.createRef();
-    this.updateApply = this.updateApply.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  updateApply() {
+  handleChange(name, value) {
+    let newSettings = {};
+    newSettings[name] = value;
+    newSettings = Object.assign(this.state.settings, newSettings);
+
     const { settings } = this.props;
-    let channelValue = this.channelInput.current.value.trim();
-    if (channelValue === '') channelValue = null;
+    const filters = settings ? settings.notificationFilters : undefined;
+    if (filters && filters[name] === newSettings[name]) {
+      delete newSettings[name];
+    }
     this.setState({
-      canApply: canApply()
+      settings: newSettings
     });
-    
-    function canApply() {
-      if (!settings) return false;
-      if (channelValue !== settings.channel) return true;
-      return false;
-    }
-  }
-
-  componentDidMount() {
-    this.updateApply();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.settings !== prevProps.settings) {
-      this.updateApply();
-    }
   }
   
   render() {
     const { settings, setSettings, status } = this.props;
-    const { canApply } = this.state;
     return (
       <>
         <div className="form-group">
           <label>Channel name</label>
-          <input className="form-control form-control-sm" type="text" style={{ maxWidth: 400 }} defaultValue={settings ? settings.channel : ''} ref={this.channelInput} onChange={this.updateApply} />
+          <input className="form-control form-control-sm" type="text" style={{ maxWidth: 400 }} defaultValue={settings ? settings.channel : ''} onChange={(e) => {
+            let value = e.target.value.trim();
+            if (value === '') value = null;
+            this.handleChange('channel', value);
+          }} />
           <p className="settings-note">
             Your channel name is used to track notifications like subs, bits etc.
           </p>
@@ -57,14 +49,12 @@ class ChannelSettings extends Component {
         <button
           className="btn btn-primary"
           onClick={() => {
-            let { value } = this.channelInput.current;
-            value = value.trim();
-            if (value === '') value = null;
-            setSettings({
-              channel: value
+            setSettings(this.state.settings);
+            this.setState({
+              settings: {}
             });
           }}
-          disabled={!canApply}
+          disabled={Object.keys(this.state.settings).length === 0}
         >
           Apply
         </button>
