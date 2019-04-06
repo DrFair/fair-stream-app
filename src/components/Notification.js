@@ -9,7 +9,7 @@ class Notification extends Component {
     const item = this.props.item;
     const { remove, hide, unhide } = this.props;
     return (
-      <div className="notification">
+      <div className={'notification' + (item.hidden ? ' hidden' : '')}>
         <div className="notification-channel">
           #{item.channel}
         </div>
