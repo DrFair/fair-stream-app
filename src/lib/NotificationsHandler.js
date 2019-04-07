@@ -7,7 +7,8 @@ const {
   NOTIFICATION_HISTORY,
   NOTIFICATION_DELETE,
   NOTIFICATION_HIDE,
-  NOTIFICATION_UNHIDE
+  NOTIFICATION_UNHIDE,
+  NOTIFICATION_SEARCH
 } = window.ipcEvents;
 
 class NotificationsHandler {
@@ -17,6 +18,10 @@ class NotificationsHandler {
     this.maxLength = 100;
     this.component.setState({
       notifications: {
+        list: [],
+        loading: false
+      },
+      searchResults: {
         list: [],
         loading: false
       }
@@ -40,6 +45,12 @@ class NotificationsHandler {
     }, callback);
   }
 
+  setSearchState(state, callback) {
+    this.component.setState({
+      searchResults: Object.assign(this.component.state.searchResults, state)
+    }, callback);
+  }
+
   updateFromHistory() {
     this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
       console.log('GOT', data);
@@ -55,22 +66,45 @@ class NotificationsHandler {
     });
   }
 
+  search(query) {
+    this.ipcWrapper.once(NOTIFICATION_SEARCH, (event, data) => {
+      console.log('SEARCH', data);
+      this.setSearchState({
+        list: data,
+        loading: false
+      });
+    });
+    this.ipcWrapper.send(NOTIFICATION_SEARCH, query, this.maxLength);
+    this.setSearchState({
+      loading: true
+    });
+  }
+
+  clearSearch() {
+    this.setSearchState({
+      loading: false,
+      list: []
+    });
+  }
+
   deleteNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.component.state.notifications.list.map(e => e);
+    this._modifyList(id, this.component.state.notifications.list.map(e => e), (list, index) => {
       list.splice(index, 1);
       this.setNotificationsState({
         list: list
       });
-    }
+    });
+    this._modifyList(id, this.component.state.searchResults.list.map(e => e), (list, index) => {
+      list.splice(index, 1);
+      this.setSearchState({
+        list: list
+      });
+    });
     this.ipcWrapper.send(NOTIFICATION_DELETE, id);
   }
 
   hideNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.component.state.notifications.list.map(e => e);
+    this._modifyList(id, this.component.state.notifications.list.map(e => e), (list, index) => {
       const settings = this.component.state.settings || this.component.props.settings;
       const filters = settings ? settings.notificationFilters : undefined;
       list[index].hidden = true;
@@ -80,24 +114,45 @@ class NotificationsHandler {
       this.setNotificationsState({
         list: list
       });
-    }
+    });
+    this._modifyList(id, this.component.state.searchResults.list.map(e => e), (list, index) => {
+      const settings = this.component.state.settings || this.component.props.settings;
+      const filters = settings ? settings.notificationFilters : undefined;
+      list[index].hidden = true;
+      if (!filters.showHidden) {
+        list.splice(index, 1);
+      }
+      this.setSearchState({
+        list: list
+      });
+    });
     this.ipcWrapper.send(NOTIFICATION_HIDE, id);
   }
 
   unhideNotification(id) {
-    const index = this.getNotificationIndex(id);
-    if (index !== -1) {
-      const list = this.component.state.notifications.list.map(e => e);
+    this._modifyList(id, this.component.state.notifications.list.map(e => e), (list, index) => {
       list[index].hidden = undefined;
       this.setNotificationsState({
         list: list
       });
-    }
+    });
+    this._modifyList(id, this.component.state.searchResults.list.map(e => e), (list, index) => {
+      list[index].hidden = undefined;
+      this.setSearchState({
+        list: list
+      });
+    });
     this.ipcWrapper.send(NOTIFICATION_UNHIDE, id);
   }
 
-  getNotificationIndex(id) {
-    const { list } = this.component.state.notifications;
+  _modifyList(id, list, modifier) {
+    const index = this._getIndex(id, list);
+    if (index !== -1) {
+      modifier(list, index, list[index])
+    }
+  }
+
+  _getIndex(id, list) {
     for (let i = 0; i < list.length; i++) {
       if (list[i]._id === id) return i;
     }

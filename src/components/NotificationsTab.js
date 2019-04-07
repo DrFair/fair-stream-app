@@ -13,12 +13,16 @@ class NotificationsTab extends Component {
   constructor(props) {
     super(props)
     this.filterSettingsOverlay = React.createRef();
+    this.searchInput = React.createRef();
   }
 
   render() {
-    const { notifications, notificationsHandler } = this.props;
-    if (!notifications) return null;
-    const { list, loading } = notifications;
+    const { notifications, searchResults, notificationsHandler } = this.props;
+    if (!notifications || !searchResults) return null;
+    const notiList = notifications.list;
+    const notiLoading = notifications.loading;
+    const searchList = searchResults.list;
+    const searchLoading = searchResults.loading;
     return (
       <div className="mx-4 mt-1 mb-4">
         <div className="d-flex flex-row mb-2" style={{ whiteSpace: 'nowrap' }}>
@@ -29,9 +33,18 @@ class NotificationsTab extends Component {
             <FormControl
               placeholder="username, message, bits..."
               style={{ maxWidth: 300 }}
+              ref={this.searchInput}
             />
             <InputGroup.Append>
-              <Button variant="primary">Search</Button>
+              <Button variant="primary" onClick={() =>{
+                let { value } = this.searchInput.current;
+                value = value.trim();
+                if (value === '') {
+                  notificationsHandler.clearSearch();
+                } else {
+                  notificationsHandler.search(value)
+                }
+              }}>Search</Button>
             </InputGroup.Append>
           </InputGroup>
           <div className="p-2">
@@ -58,25 +71,50 @@ class NotificationsTab extends Component {
             }}><FontAwesomeIcon icon={faEye} /> Unhide all</Button>
           </div> */}
         </div>
-        {loading ? (
+        {searchLoading ? (
+          <>
+            <div>Searching...</div>
+          </>
+        ) : null}
+        {searchList.length > 0 ? (
+          <>
+            <h5>Search results</h5>
+            {searchList.map((e) => (
+              <div key={e._id}>
+                <Notification
+                  item={e}
+                  remove={() => notificationsHandler.deleteNotification(e._id)}
+                  hide={() => notificationsHandler.hideNotification(e._id)}
+                  unhide={() => notificationsHandler.unhideNotification(e._id)}
+                />
+              </div>
+            ))}
+          </>
+        ) : null}
+        {notiLoading ? (
           <>
             <div>Loading...</div>
           </>
         ) : null}
-        {list.length <= 0 && !loading ? (
+        {notiList.length <= 0 && !notiLoading ? (
           <>
             <div>No notifications to show :(</div>
           </>
-        ) : list.map((e) => (
-          <div key={e._id}>
-            <Notification
-              item={e}
-              remove={() => notificationsHandler.deleteNotification(e._id)}
-              hide={() => notificationsHandler.hideNotification(e._id)}
-              unhide={() => notificationsHandler.unhideNotification(e._id)}
-            />
-          </div>
-        ))}
+        ) : (
+          <>
+            <h5>Notifications</h5>
+            {notiList.map((e) => (
+              <div key={e._id}>
+                <Notification
+                  item={e}
+                  remove={() => notificationsHandler.deleteNotification(e._id)}
+                  hide={() => notificationsHandler.hideNotification(e._id)}
+                  unhide={() => notificationsHandler.unhideNotification(e._id)}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
     )
   }

@@ -74,7 +74,7 @@ class App extends Component {
   }
 
   render() {
-    const { route, settings, status, notifications } = this.state;
+    const { route, settings, status, notifications, searchResults } = this.state;
     const RouteComp = this.routes[route] || null;
     const childProps = {
       route: route,
@@ -83,6 +83,7 @@ class App extends Component {
       settings: settings,
       status: status,
       notifications: notifications,
+      searchResults: searchResults,
       notificationsHandler: this.notifications
     };
     return (

@@ -9,6 +9,7 @@ module.exports = {
   NOTIFICATION_DELETE: 'notification-delete',
   NOTIFICATION_HIDE: 'notification-hide',
   NOTIFICATION_UNHIDE: 'notification-unhide',
+  NOTIFICATION_SEARCH: 'notification-search', // Search for the query
   OVERLAY_SET: 'overlay-set', // Set overlay index and port
   OVERLAY_SETTINGS: 'overlay-settings', // Set overlay settings
 };

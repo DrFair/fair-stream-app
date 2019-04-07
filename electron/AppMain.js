@@ -21,6 +21,7 @@ const {
   NOTIFICATION_DELETE,
   NOTIFICATION_HIDE,
   NOTIFICATION_UNHIDE,
+  NOTIFICATION_SEARCH,
   OVERLAY_SET,
   OVERLAY_SETTINGS
 } = require('./ipcEvents');
@@ -111,13 +112,58 @@ class AppMain extends EventEmitter {
       count = Number(count);
       count = isNaN(count) ? 100 : Math.max(1, count);
       const filters = this.settings.getNEDBNotificationFilters();
-      // const time = Date.now();
+      const time = Date.now();
       this.notiDB.find(filters).sort({ timestamp: -1 }).limit(count).exec((err, docs) => {
         if (err) {
           console.log('Error getting filtered notifications:', err)
         } else {
-          // console.log(`Query took ${Date.now() - time} ms to find ${docs.length} docs`);
+          console.log(`History took ${Date.now() - time} ms to find ${docs.length} docs`);
           event.sender.send(NOTIFICATION_HISTORY, docs);
+        }
+      });
+    });
+
+    ipcMain.on(NOTIFICATION_SEARCH, (event, query, count) => {
+      count = Number(count);
+      count = isNaN(count) ? 100 : Math.max(1, count);
+      query = query.toLowerCase();
+      const testProp = (prop) => {
+        if (prop === undefined || prop === null) return false;
+        return String(prop).toLowerCase().includes(query);
+      }
+      const testObj = (obj, ...props) => {
+        if (obj === undefined || obj === null) return false;
+        for (let i = 0; i < props.length; i++) {
+          if (testProp(obj[props[i]])) return true;
+        }
+        return false;
+      }
+      const testArray = (array, ...props) => {
+        if (array === undefined || array === null) return false;
+        for (let i = 0; i < array.length; i++) {
+          if (testObj(array[i], ...props)) return true;
+        }
+        return false;
+      }
+      const time = Date.now();
+      const filter = {
+        $where: function() {
+          return testProp(this.login) ||
+            testProp(this.displayName) ||
+            testProp(this.systemMsg) ||
+            testProp(this.event) ||
+            testProp(this.msg) ||
+            testProp(this.tier) ||
+            (this.recepient !== undefined && testObj(this.recepient, 'login', 'displayName')) ||
+            (this.recepients !== undefined && testArray(this.recepients, 'login', 'displayName'));
+        }
+      }
+      this.notiDB.find(filter).sort({ timestamp: -1 }).limit(count).exec((err, docs) => {
+        if (err) {
+          console.log('Error searching for notifications:', err);
+        } else {
+          console.log(`Search took ${Date.now() - time} ms to find ${docs.length} docs`);
+          event.sender.send(NOTIFICATION_SEARCH, docs);
         }
       });
     });
