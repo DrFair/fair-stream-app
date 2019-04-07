@@ -23,7 +23,8 @@ class NotificationsHandler {
       },
       searchResults: {
         list: [],
-        loading: false
+        loading: false,
+        query: null
       }
     });
     this.updateFromHistory();
@@ -76,14 +77,16 @@ class NotificationsHandler {
     });
     this.ipcWrapper.send(NOTIFICATION_SEARCH, query, this.maxLength);
     this.setSearchState({
-      loading: true
+      loading: true,
+      query: query
     });
   }
 
   clearSearch() {
     this.setSearchState({
       loading: false,
-      list: []
+      list: [],
+      query: null
     });
   }
 

@@ -23,6 +23,7 @@ class NotificationsTab extends Component {
     const notiLoading = notifications.loading;
     const searchList = searchResults.list;
     const searchLoading = searchResults.loading;
+    const searchQuery = searchResults.query;
     return (
       <div className="mx-4 mt-1 mb-4">
         <div className="d-flex flex-row mb-2" style={{ whiteSpace: 'nowrap' }}>
@@ -90,6 +91,10 @@ class NotificationsTab extends Component {
               </div>
             ))}
           </>
+        ) : searchQuery !== null && !searchLoading ? (
+          <>
+            <div>Could not find any results for {searchQuery}</div>
+          </>
         ) : null}
         {notiLoading ? (
           <>
@@ -102,7 +107,7 @@ class NotificationsTab extends Component {
           </>
         ) : (
           <>
-            <h5>Notifications</h5>
+            {notiList.length > 0 ? <h5>Notifications</h5> : null}
             {notiList.map((e) => (
               <div key={e._id}>
                 <Notification
