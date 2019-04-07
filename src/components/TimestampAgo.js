@@ -47,6 +47,7 @@ class TimestampAgo extends Component {
     const deltaS = Math.floor(deltaMS / 1000);
     let nextTimeout = null;
     let text = 'N/A';
+    let title = null;
     if (deltaS < 0) {
       text = '0s' + affixText;
       nextTimeout = Math.abs(deltaS); // Run when time turns positive
@@ -81,10 +82,12 @@ class TimestampAgo extends Component {
       if (full) {
         text += ` ${date.getHours()}:${date.getMinutes()}`;
       }
+      title = date.toString();
       // Never update again
     }
     this.setState({
-      text: text
+      text: text,
+      title: title
     });
 
     if (nextTimeout !== null) {
@@ -106,11 +109,11 @@ class TimestampAgo extends Component {
   
 
   render() {
-    const { text } = this.state;
+    const { text, title } = this.state;
     return (
-      <>
+      <span title={title}>
         {text}
-      </>
+      </span>
     )
   }
 }
