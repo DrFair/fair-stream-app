@@ -3,6 +3,7 @@ import TimestampAgo from './TimestampAgo';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash, faTrash, faQuestion, faShare, faHistory } from '@fortawesome/free-solid-svg-icons';
+import onClickOutside from "react-onclickoutside";
 
 class Notification extends Component {
   constructor(props) {
@@ -12,13 +13,7 @@ class Notification extends Component {
       confirmDelete: false
     };
     this.handleDelete = this.handleDelete.bind(this);
-    this.timer = null;
-  }
-
-  componentWillUnmount() {
-    if (this.timer !== null) {
-      clearTimeout(this.timer)
-    }
+    this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
   handleDelete() {
@@ -30,13 +25,14 @@ class Notification extends Component {
       this.setState({
         confirmDelete: true
       })
-      this.timer = setTimeout(() => {
-        this.setState({
-          confirmDelete: false
-        });
-        this.timer = null;
-      }, 5000);
     }
+  }
+
+  handleClickOutside(event) {
+    if (!this.state.confirmDelete) return;
+    this.setState({
+      confirmDelete: false
+    });
   }
   
   render() {
@@ -64,9 +60,11 @@ class Notification extends Component {
               <Button variant="info" size="sm" onClick={hide}><FontAwesomeIcon icon={faEyeSlash} /></Button>
             </OverlayTrigger>
           )}
-          <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-delete-' + item.id}>{confirmDelete ? 'Confirm delete' : 'Delete'}</Tooltip>}>
-            <Button variant="danger" size="sm" onClick={this.handleDelete}><FontAwesomeIcon icon={confirmDelete ? faQuestion : faTrash} /></Button>
-          </OverlayTrigger>
+          <OutsideWrapper handleClickOutside={this.handleClickOutside}>
+            <OverlayTrigger placement="bottom" overlay={<Tooltip id={'tooltip-delete-' + item.id}>{confirmDelete ? 'Confirm' : 'Delete'}</Tooltip>}>
+              <Button variant="danger" size="sm" onClick={this.handleDelete}><FontAwesomeIcon icon={confirmDelete ? faQuestion : faTrash} /></Button>
+            </OverlayTrigger>
+          </OutsideWrapper>
         </div>
         <div className="notification-title">
           <Title item={item} />
@@ -76,6 +74,13 @@ class Notification extends Component {
     )
   }
 }
+
+const OutsideWrapperInt = ({ handleClickOutside, children }) => {
+  OutsideWrapperInt.handleClickOutside = handleClickOutside;
+  return children;
+}
+
+const OutsideWrapper = onClickOutside(OutsideWrapperInt);
 
 const Title = ({ item }) => {
   let name = item.displayName;
