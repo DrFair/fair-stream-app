@@ -77,10 +77,10 @@ class NotificationsTab extends Component {
             <div>Searching...</div>
           </>
         ) : null}
-        {searchList.length > 0 ? (
+        {searchQuery !== null ? (
           <>
-            <h5>Search results</h5>
-            {searchList.map((e) => (
+            <h5>Search results for {searchQuery}</h5>
+            {searchList.length > 0 ? searchList.map((e) => (
               <div key={e._id}>
                 <Notification
                   item={e}
@@ -89,11 +89,11 @@ class NotificationsTab extends Component {
                   unhide={() => notificationsHandler.unhideNotification(e._id)}
                 />
               </div>
-            ))}
-          </>
-        ) : searchQuery !== null && !searchLoading ? (
-          <>
-            <div>Could not find any results for {searchQuery}</div>
+            )) : (
+              <>
+                <div>Could not find any results for {searchQuery}</div>
+              </>
+            )}
           </>
         ) : null}
         {notiLoading ? (

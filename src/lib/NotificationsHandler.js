@@ -72,13 +72,13 @@ class NotificationsHandler {
       console.log('SEARCH', data);
       this.setSearchState({
         list: data,
-        loading: false
+        loading: false,
+        query: query
       });
     });
     this.ipcWrapper.send(NOTIFICATION_SEARCH, query, this.maxLength);
     this.setSearchState({
-      loading: true,
-      query: query
+      loading: true
     });
   }
 
