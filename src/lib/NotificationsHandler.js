@@ -28,32 +28,30 @@ class NotificationsHandler {
       let list = this.component.state.notifications.list.map((e) => e); // Need to make a copy of list
       list.unshift(data);
       if (list.length > this.maxLength) list.splice(this.maxLength, list.length - this.maxLength);
-      this.component.setState({
-        notifications: {
-          list: list,
-          loading: this.component.state.notifications.loading
-        }
+      this.setNotificationsState({
+        list: list
       });
     });
+  }
+
+  setNotificationsState(state, callback) {
+    this.component.setState({
+      notifications: Object.assign(this.component.state.notifications, state)
+    }, callback);
   }
 
   updateFromHistory() {
     this.ipcWrapper.once(NOTIFICATION_HISTORY, (event, data) => {
       console.log('GOT', data);
-      this.component.setState({
-        notifications: {
-          list: data,
-          loading: false
-        }
+      this.setNotificationsState({
+        list: data,
+        loading: false
       });
     });
 
     this.ipcWrapper.send(NOTIFICATION_HISTORY, this.maxLength);
-    this.component.setState({
-      notifications: {
-        loading: true,
-        list: this.component.state.notifications.list
-      }
+    this.setNotificationsState({
+      loading: true
     });
   }
 
@@ -62,11 +60,8 @@ class NotificationsHandler {
     if (index !== -1) {
       const list = this.component.state.notifications.list.map(e => e);
       list.splice(index, 1);
-      this.component.setState({
-        notifications: {
-          list: list,
-          loading: this.component.state.notifications.loading
-        }
+      this.setNotificationsState({
+        list: list
       });
     }
     this.ipcWrapper.send(NOTIFICATION_DELETE, id);
@@ -82,11 +77,8 @@ class NotificationsHandler {
       if (!filters.showHidden) {
         list.splice(index, 1);
       }
-      this.component.setState({
-        notifications: {
-          list: list,
-          loading: this.component.state.notifications.loading
-        }
+      this.setNotificationsState({
+        list: list
       });
     }
     this.ipcWrapper.send(NOTIFICATION_HIDE, id);
@@ -97,11 +89,8 @@ class NotificationsHandler {
     if (index !== -1) {
       const list = this.component.state.notifications.list.map(e => e);
       list[index].hidden = undefined;
-      this.component.setState({
-        notifications: {
-          list: list,
-          loading: this.component.state.notifications.loading
-        }
+      this.setNotificationsState({
+        list: list
       });
     }
     this.ipcWrapper.send(NOTIFICATION_UNHIDE, id);
